@@ -227,6 +227,7 @@
   </div>
 </main>
 
+<script src="config.js" onerror="window.PORTFOLIO_CONFIG={}"></script>
 <script>
   const toggle = document.getElementById('theme-toggle');
 
@@ -247,6 +248,12 @@
       localStorage.setItem('theme', 'light');
     }
   });
+
+  // Apply URLs from config.js (gitignored) if provided
+  const cfg = window.PORTFOLIO_CONFIG || {};
+  if (cfg.resumeUrl   && cfg.resumeUrl   !== '#') document.getElementById('resume-banner').href   = cfg.resumeUrl;
+  if (cfg.githubUrl   && cfg.githubUrl   !== '#') document.getElementById('github-banner').href   = cfg.githubUrl;
+  if (cfg.linkedinUrl && cfg.linkedinUrl !== '#') document.getElementById('linkedin-banner').href = cfg.linkedinUrl;
 
   // Prevent placeholder banner links from scrolling to top
   document.querySelectorAll('.banner[href="#"]').forEach(b =>

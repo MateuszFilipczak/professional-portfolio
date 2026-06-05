@@ -28,13 +28,20 @@ Then open `index.html` directly:
 
 ## Customization
 
-| What | Where in `index.html` |
+**Adding your URLs (kept private, never committed):**
+
+```bash
+cp config.example.js config.js
+# Edit config.js and fill in your real URLs
+```
+
+`config.js` is listed in `.gitignore` so it will never be pushed to GitHub.
+
+| What | Where |
 |---|---|
-| Resume link | `href="#"` on `<a id="resume-banner">` |
-| GitHub link | `href="#"` on `<a id="github-banner">` |
-| LinkedIn link | `href="#"` on `<a id="linkedin-banner">` |
-| Page title | `<title>` tag and `<h1>` in `<header>` |
-| Color palette | CSS custom properties in `:root` and `[data-theme="dark"]` |
+| Resume / GitHub / LinkedIn URLs | `config.js` (copied from `config.example.js`) |
+| Page title | `<title>` tag and `<h1>` in `index.html` |
+| Color palette | CSS custom properties in `:root` and `[data-theme="dark"]` in `index.html` |
 
 ## License
 
