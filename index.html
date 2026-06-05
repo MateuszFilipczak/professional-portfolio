@@ -349,21 +349,21 @@
     .contact-list {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 20px;
     }
 
     .contact-item {
       display: flex;
-      align-items: center;
-      gap: 12px;
+      align-items: baseline;
+      gap: 16px;
       font-size: 0.95rem;
     }
 
     .contact-item-label {
-      width: 80px;
-      font-size: 0.8rem;
+      width: 90px;
+      font-size: 0.75rem;
       font-weight: 600;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
       color: var(--text-muted);
       flex-shrink: 0;
@@ -418,7 +418,7 @@
   <section id="home" class="section">
     <div class="banners">
 
-      <a href="#" class="banner" id="resume-banner">
+      <a href="assets/CV_Mateusz_Filipczak.pdf" download class="banner" id="resume-banner">
         <svg class="banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -501,29 +501,40 @@
     <div class="skills-grid">
 
       <div class="skill-category">
-        <h3>SOAR & Automation</h3>
+        <h3>Security Automation & SOAR Engineering</h3>
         <div class="skill-tags">
           <span class="skill-tag">Cortex XSOAR</span>
           <span class="skill-tag">Python</span>
-          <span class="skill-tag">REST APIs</span>
-          <span class="skill-tag">Playbook Development</span>
+          <span class="skill-tag">REST APIs / API Integrations</span>
+          <span class="skill-tag">Playbook Development & Orchestration</span>
           <span class="skill-tag">JSON / YAML</span>
         </div>
       </div>
 
       <div class="skill-category">
-        <h3>Security Analytics</h3>
+        <h3>Detection & Security Analytics Engineering</h3>
         <div class="skill-tags">
-          <span class="skill-tag">SIEM</span>
-          <span class="skill-tag">Threat Intelligence</span>
+          <span class="skill-tag">SIEM (Splunk, etc.)</span>
           <span class="skill-tag">Detection Engineering</span>
           <span class="skill-tag">Log Analysis</span>
+          <span class="skill-tag">Threat Intelligence</span>
           <span class="skill-tag">KQL / SPL</span>
+          <span class="skill-tag">Security Metrics & Reporting</span>
+          <span class="skill-tag">SQL</span>
         </div>
       </div>
 
       <div class="skill-category">
-        <h3>SecDevOps</h3>
+        <h3>Security Data & Integration Engineering</h3>
+        <div class="skill-tags">
+          <span class="skill-tag">Security Data Pipelines</span>
+          <span class="skill-tag">API-driven Integrations (XDR, ServiceNow, LDAP, etc.)</span>
+          <span class="skill-tag">Data Processing & Normalization</span>
+        </div>
+      </div>
+
+      <div class="skill-category">
+        <h3>SecDevOps & Security Engineering</h3>
         <div class="skill-tags">
           <span class="skill-tag">CI/CD Pipelines</span>
           <span class="skill-tag">Git</span>
@@ -534,11 +545,11 @@
       </div>
 
       <div class="skill-category">
-        <h3>Leadership</h3>
+        <h3>Technical Leadership</h3>
         <div class="skill-tags">
           <span class="skill-tag">Technical Leadership</span>
           <span class="skill-tag">Team Mentoring</span>
-          <span class="skill-tag">Architecture Reviews</span>
+          <span class="skill-tag">Architecture & Design Reviews</span>
           <span class="skill-tag">Stakeholder Communication</span>
         </div>
       </div>
@@ -578,12 +589,12 @@
         <a href="mailto:mateusz.filipczak@outlook.com">mateusz.filipczak@outlook.com</a>
       </div>
       <div class="contact-item">
-        <span class="contact-item-label">LinkedIn</span>
-        <a href="https://www.linkedin.com/in/mateusz-f-/" target="_blank" rel="noopener">linkedin.com/in/mateusz-f-/</a>
+        <span class="contact-item-label">Web</span>
+        <a href="https://filipczak.dev" target="_blank" rel="noopener">filipczak.dev</a>
       </div>
       <div class="contact-item">
-        <span class="contact-item-label">GitHub</span>
-        <a href="https://github.com/MateuszFilipczak" target="_blank" rel="noopener">github.com/MateuszFilipczak</a>
+        <span class="contact-item-label">Location</span>
+        <span>Warsaw, Poland</span>
       </div>
     </div>
   </section>
@@ -610,9 +621,6 @@
     }
   });
 
-  document.querySelectorAll('.banner[href="#"]').forEach(b =>
-    b.addEventListener('click', e => e.preventDefault())
-  );
 
   // Highlight nav link for the section currently in view
   const navLinks = document.querySelectorAll('.nav-link');
