@@ -5,7 +5,7 @@ A minimal, fast-loading personal portfolio page — no frameworks, no dependenci
 ## Features
 
 - **Resume & GitHub banners** — direct links to your resume and GitHub profile
-- **Light / dark mode** — pill toggle in the header; defaults to light
+- **Light / dark mode** — pill toggle in the header; respects OS preference, persists across reloads
 - **Fully responsive** — banners stack gracefully on small screens
 - **Zero dependencies** — pure HTML, CSS, and vanilla JS; works offline
 
@@ -16,8 +16,15 @@ Clone and open in a browser:
 ```bash
 git clone https://github.com/MateuszFilipczak/professional-portfolio.git
 cd professional-portfolio
-open index.html
 ```
+
+Then open `index.html` directly:
+
+| Platform | Command |
+|---|---|
+| macOS | `open index.html` |
+| Linux | `xdg-open index.html` |
+| Windows | `start index.html` |
 
 ## Customization
 
