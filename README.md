@@ -1,17 +1,17 @@
-# Professional Portfolio
+# Mateusz Filipczak — Personal Portfolio
 
-A minimal, fast-loading personal portfolio page — no frameworks, no dependencies, no build step.
+A minimal, single-page personal portfolio — no frameworks, no dependencies, no build step.
 
 ## Features
 
-- **Resume & GitHub banners** — direct links to your resume and GitHub profile
-- **Light / dark mode** — pill toggle in the header; respects OS preference, persists across reloads
-- **Fully responsive** — banners stack gracefully on small screens
+- **Sticky navigation** — Home, About, Experience, Skills, Projects, Contact with smooth scroll and active link highlighting
+- **Resume download** — links directly to `assets/CV_Mateusz_Filipczak.pdf`
+- **GitHub & LinkedIn banners** — quick links from the home section
+- **Light / dark mode** — toggle in the header; respects OS preference, persists across reloads
+- **Fully responsive** — stacks gracefully on small screens
 - **Zero dependencies** — pure HTML, CSS, and vanilla JS; works offline
 
 ## Getting started
-
-Clone and open in a browser:
 
 ```bash
 git clone https://github.com/MateuszFilipczak/professional-portfolio.git
@@ -28,20 +28,12 @@ Then open `index.html` directly:
 
 ## Customization
 
-**Adding your URLs (kept private, never committed):**
-
-```bash
-cp config.example.js config.js
-# Edit config.js and fill in your real URLs
-```
-
-`config.js` is listed in `.gitignore` so it will never be pushed to GitHub.
-
 | What | Where |
 |---|---|
-| Resume / GitHub / LinkedIn URLs | `config.js` (copied from `config.example.js`) |
-| Page title | `<title>` tag and `<h1>` in `index.html` |
-| Color palette | CSS custom properties in `:root` and `[data-theme="dark"]` in `index.html` |
+| Page title & meta description | `<title>`, `<meta>` tags in `index.html` |
+| Section content | Each `<section id="...">` in `index.html` |
+| Resume PDF | Replace `assets/CV_Mateusz_Filipczak.pdf` |
+| Color palette | CSS custom properties in `:root` and `[data-theme="dark"]` |
 
 ## License
 
