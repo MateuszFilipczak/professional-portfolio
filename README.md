@@ -32,6 +32,7 @@ Then open `index.html` directly:
 |---|---|
 | Resume link | `href="#"` on `<a id="resume-banner">` |
 | GitHub link | `href="#"` on `<a id="github-banner">` |
+| LinkedIn link | `href="#"` on `<a id="linkedin-banner">` |
 | Page title | `<title>` tag and `<h1>` in `<header>` |
 | Color palette | CSS custom properties in `:root` and `[data-theme="dark"]` |
 
