@@ -8,7 +8,7 @@
   <meta property="og:title" content="Mateusz Filipczak | Cybersecurity, Security Automation & SecDevOps Engineer" />
   <meta property="og:description" content="Cybersecurity Engineer specializing in Cortex XSOAR, API-driven SOC engineering, Security Analytics, Technical Leadership and SecDevOps. 10+ years of experience in cybersecurity." />
   <meta property="og:type" content="website" />
-  <script>if (!sessionStorage.getItem('visited')) document.documentElement.classList.add('first-visit');</script>
+  <script>document.documentElement.classList.add('first-visit');</script>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%234a90d9' d='M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z'/></svg>">
   <style>
     :root {
@@ -484,9 +484,50 @@
       color: var(--text-muted);
     }
 
+    /* ── Hamburger ── */
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      color: var(--text);
+      flex-shrink: 0;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 520px) {
-      .header-inner { padding: 0 12px; gap: 8px; }
+      .header-inner { padding: 0 12px; gap: 0; justify-content: space-between; }
+
+      .nav-toggle { display: flex; align-items: center; }
+
+      .site-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: var(--header-bg);
+        border-top: 1px solid var(--banner-border);
+        border-bottom: 1px solid var(--banner-border);
+        padding: 8px 0;
+        z-index: 99;
+      }
+
+      .site-nav.nav-open { display: flex; }
+
+      .nav-link {
+        padding: 12px 24px;
+        border-bottom: none;
+        border-left: 2px solid transparent;
+      }
+
+      .nav-link.active {
+        border-left-color: var(--accent);
+        border-bottom-color: transparent;
+      }
+
       .banners { flex-direction: column; }
       .exp-entry { grid-template-columns: 1fr; }
       .exp-date { grid-row: auto; grid-column: auto; text-align: left; }
@@ -497,6 +538,13 @@
 
 <header>
   <div class="header-inner">
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <rect y="3" width="20" height="2" rx="1"/>
+        <rect y="9" width="20" height="2" rx="1"/>
+        <rect y="15" width="20" height="2" rx="1"/>
+      </svg>
+    </button>
     <nav class="site-nav" aria-label="Main navigation">
       <a href="#home" class="nav-link">Home</a>
       <a href="#about" class="nav-link">About</a>
@@ -802,11 +850,20 @@
 
   const navLinks = document.querySelectorAll('.nav-link');
   const sections = document.querySelectorAll('section[id]');
+  const siteNav = document.querySelector('.site-nav');
+  const navToggle = document.querySelector('.nav-toggle');
+
+  navToggle.addEventListener('click', () => {
+    const open = siteNav.classList.toggle('nav-open');
+    navToggle.setAttribute('aria-expanded', open);
+  });
 
   // Scroll without adding hash to URL
   navLinks.forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
+      siteNav.classList.remove('nav-open');
+      navToggle.setAttribute('aria-expanded', 'false');
       const target = document.querySelector(link.getAttribute('href'));
       if (target) target.scrollIntoView({ behavior: 'smooth' });
     });
@@ -825,18 +882,15 @@
 
   sections.forEach(s => observer.observe(s));
 
-  if (document.documentElement.classList.contains('first-visit')) {
-    sessionStorage.setItem('visited', '1');
-    const animObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          animObserver.unobserve(entry.target);
-        }
-      });
-    }, { rootMargin: '0px 0px -8% 0px' });
-    document.querySelectorAll('.exp-entry, .skill-category').forEach(el => animObserver.observe(el));
-  }
+  const animObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        animObserver.unobserve(entry.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.exp-entry, .skill-category').forEach(el => animObserver.observe(el));
 </script>
 
 </body>
