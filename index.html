@@ -1359,85 +1359,109 @@
     heroObserver.observe(canvas);
   }
 
-  // ── Mobile collapse ──
+  // ── Mobile collapse (responsive: applies under 520px, restores above) ──
   (function () {
-    if (!window.matchMedia('(max-width: 520px)').matches) return;
+    const EASE = 'cubic-bezier(0.25,0.46,0.45,0.94)';
+    const mq = window.matchMedia('(max-width: 520px)');
+    const buttons = []; // injected Read more / Show more buttons
 
     function makeBtn(label) {
-      const btn = document.createElement('button');
-      btn.className = 'read-more-btn';
-      btn.textContent = label;
-      return btn;
+      const b = document.createElement('button');
+      b.className = 'read-more-btn';
+      b.textContent = label;
+      buttons.push(b);
+      return b;
     }
 
-    // Shared easing for every expand/collapse on the page.
-    const EASE = 'cubic-bezier(0.25,0.46,0.45,0.94)';
+    function setup() {
+      // About paragraph — animate max-height smoothly in both directions.
+      const about = document.querySelector('.about-text');
+      if (about && !about.dataset.collapsible) {
+        about.dataset.collapsible = '1';
+        const shortH = 80;
+        const mask = 'linear-gradient(to bottom, black 40%, transparent 100%)';
+        Object.assign(about.style, {
+          maxHeight: shortH + 'px', overflow: 'hidden',
+          transition: `max-height 0.45s ${EASE}`,
+          webkitMaskImage: mask, maskImage: mask
+        });
+        let open = false;
+        const btn = makeBtn('Read more');
+        about.after(btn);
+        btn.addEventListener('click', () => {
+          open = !open;
+          about.style.maxHeight = (open ? about.scrollHeight : shortH) + 'px';
+          about.style.webkitMaskImage = open ? 'none' : mask;
+          about.style.maskImage = open ? 'none' : mask;
+          btn.textContent = open ? 'Read less' : 'Read more';
+        });
+      }
 
-    // About paragraph — animate max-height smoothly in BOTH directions.
-    const about = document.querySelector('.about-text');
-    if (about) {
-      const fullH = about.scrollHeight;
-      const shortH = 80;
-      const mask = 'linear-gradient(to bottom, black 40%, transparent 100%)';
-      Object.assign(about.style, {
-        maxHeight: shortH + 'px', overflow: 'hidden',
-        transition: `max-height 0.45s ${EASE}`,
-        webkitMaskImage: mask, maskImage: mask
-      });
-      let open = false;
-      const btn = makeBtn('Read more');
-      about.after(btn);
-      btn.addEventListener('click', () => {
-        open = !open;
-        about.style.maxHeight = (open ? fullH : shortH) + 'px';
-        about.style.webkitMaskImage = open ? 'none' : mask;
-        about.style.maskImage = open ? 'none' : mask;
-        btn.textContent = open ? 'Read less' : 'Read more';
+      // Experience bullets — animate the <ul> height; hidden bullets fade.
+      document.querySelectorAll('.exp-bullets').forEach(list => {
+        const items = Array.from(list.querySelectorAll('li'));
+        if (items.length <= 2 || list.dataset.collapsible) return;
+        list.dataset.collapsible = '1';
+        const extra = items.slice(2);
+        const collapsedH = Math.round(
+          extra[0].getBoundingClientRect().top - list.getBoundingClientRect().top
+        );
+        Object.assign(list.style, {
+          overflow: 'hidden', height: collapsedH + 'px',
+          transition: `height 0.65s ${EASE}`
+        });
+        extra.forEach(li => { li.style.opacity = '0'; });
+        let open = false;
+        const btn = makeBtn(`Show ${extra.length} more`);
+        list.after(btn);
+        btn.addEventListener('click', () => {
+          open = !open;
+          if (open) {
+            list.style.height = list.scrollHeight + 'px';
+            extra.forEach((li, i) => {
+              li.style.transition = `opacity 0.4s ease ${(i * 0.08).toFixed(2)}s`;
+              li.style.opacity = '0.8';
+            });
+            btn.textContent = 'Show less';
+          } else {
+            list.style.height = collapsedH + 'px';
+            extra.forEach(li => {
+              li.style.transition = 'opacity 0.3s ease';
+              li.style.opacity = '0';
+            });
+            btn.textContent = `Show ${extra.length} more`;
+          }
+        });
       });
     }
 
-    // Experience bullets — animate the <ul> height smoothly in BOTH directions,
-    // same approach as About. Single element animates; hidden bullets fade.
-    document.querySelectorAll('.exp-bullets').forEach(list => {
-      const items = Array.from(list.querySelectorAll('li'));
-      if (items.length <= 2) return;
-      const extra = items.slice(2);
+    // Remove buttons and strip every inline style so the text returns to normal.
+    function teardown() {
+      buttons.forEach(b => b.remove());
+      buttons.length = 0;
 
-      // Measure collapsed height = distance from list top to the 3rd item's top
-      const collapsedH = Math.round(
-        extra[0].getBoundingClientRect().top - list.getBoundingClientRect().top
-      );
+      const about = document.querySelector('.about-text');
+      if (about && about.dataset.collapsible) {
+        delete about.dataset.collapsible;
+        ['maxHeight', 'overflow', 'transition', 'webkitMaskImage', 'maskImage']
+          .forEach(p => { about.style[p] = ''; });
+      }
 
-      Object.assign(list.style, {
-        overflow: 'hidden',
-        height: collapsedH + 'px',
-        transition: `height 0.65s ${EASE}`
+      document.querySelectorAll('.exp-bullets').forEach(list => {
+        if (!list.dataset.collapsible) return;
+        delete list.dataset.collapsible;
+        ['height', 'overflow', 'transition'].forEach(p => { list.style[p] = ''; });
+        list.querySelectorAll('li').forEach(li => {
+          li.style.opacity = '';
+          li.style.transition = '';
+        });
       });
-      extra.forEach(li => { li.style.opacity = '0'; });
+    }
 
-      let open = false;
-      const btn = makeBtn(`Show ${extra.length} more`);
-      list.after(btn);
+    function apply() { mq.matches ? setup() : teardown(); }
 
-      btn.addEventListener('click', () => {
-        open = !open;
-        if (open) {
-          list.style.height = list.scrollHeight + 'px';
-          extra.forEach((li, i) => {
-            li.style.transition = `opacity 0.4s ease ${(i * 0.08).toFixed(2)}s`;
-            li.style.opacity = '0.8';
-          });
-          btn.textContent = 'Show less';
-        } else {
-          list.style.height = collapsedH + 'px';
-          extra.forEach(li => {
-            li.style.transition = 'opacity 0.3s ease';
-            li.style.opacity = '0';
-          });
-          btn.textContent = `Show ${extra.length} more`;
-        }
-      });
-    });
+    apply();
+    mq.addEventListener('change', apply);
   })();
 
   // ── Skill info popover ──
