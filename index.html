@@ -1318,19 +1318,25 @@
       });
     }
 
-    // Experience bullets — measure each item's real height before hiding
+    // Experience bullets — single wrapper animates height (one layout recalc per frame)
+    // opacity stagger on items is GPU-composited (free on mobile)
     document.querySelectorAll('.exp-bullets').forEach(list => {
       const items = Array.from(list.querySelectorAll('li'));
       const extra = items.slice(2);
       if (!extra.length) return;
 
-      // Measure natural heights while still visible
-      const heights = extra.map(li => li.scrollHeight);
+      // Wrap all extra bullets in one container
+      const wrap = document.createElement('div');
+      wrap.style.overflow = 'hidden';
+      list.appendChild(wrap);
+      extra.forEach(li => {
+        li.style.opacity = '0';
+        wrap.appendChild(li);
+      });
 
-      // Instantly collapse without animation
-      extra.forEach(li => Object.assign(li.style, {
-        maxHeight: '0', opacity: '0', overflow: 'hidden', transition: 'none'
-      }));
+      // Measure full height while items are in the DOM
+      const fullH = wrap.scrollHeight;
+      wrap.style.height = '0';
 
       let open = false;
       const btn = makeBtn(`Show ${extra.length} more`);
@@ -1339,28 +1345,25 @@
       btn.addEventListener('click', () => {
         open = !open;
         if (open) {
+          // One height animation on wrapper + staggered opacity on items
+          wrap.style.transition = 'height 0.4s cubic-bezier(0.25,0.46,0.45,0.94)';
+          wrap.style.height = fullH + 'px';
           extra.forEach((li, i) => {
-            const delay = (i * 0.07).toFixed(2);
-            li.style.transition = `max-height 0.38s cubic-bezier(0.25,0.46,0.45,0.94) ${delay}s, opacity 0.3s ease ${delay}s`;
-            li.style.maxHeight = (heights[i] + 8) + 'px';
+            li.style.transition = `opacity 0.3s ease ${(i * 0.07).toFixed(2)}s`;
             li.style.opacity = '0.8';
           });
           btn.textContent = 'Show less';
         } else {
-          // Read all current heights first (avoid layout thrashing)
-          const currentHeights = extra.map(li => li.offsetHeight);
-          // Pin to current height with no transition
-          extra.forEach((li, i) => {
-            li.style.transition = 'none';
-            li.style.maxHeight = currentHeights[i] + 'px';
-          });
-          // Single reflow to commit the pinned values
-          list.offsetHeight;
-          // Animate to 0 on the next frame so the browser sees the FROM state
+          // Pin exact current height, then RAF to ensure smooth collapse
+          const curH = wrap.offsetHeight;
+          wrap.style.transition = 'none';
+          wrap.style.height = curH + 'px';
+          wrap.offsetHeight; // single reflow
           requestAnimationFrame(() => {
+            wrap.style.transition = 'height 0.4s ease';
+            wrap.style.height = '0';
             extra.forEach(li => {
-              li.style.transition = 'max-height 0.4s ease, opacity 0.32s ease';
-              li.style.maxHeight = '0';
+              li.style.transition = 'opacity 0.28s ease';
               li.style.opacity = '0';
             });
           });
