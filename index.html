@@ -187,6 +187,16 @@
       scroll-margin-top: 72px;
     }
 
+    /* Skip internal layout/paint for sections while they're off-screen.
+       This is the property that actually cuts the reflow cost when the
+       experience list expands/collapses, since everything below it would
+       otherwise be re-laid-out every frame. contain-intrinsic-size reserves
+       a placeholder height so the scrollbar doesn't jump. */
+    #skills, #projects, #contact, footer {
+      content-visibility: auto;
+      contain-intrinsic-size: auto 600px;
+    }
+
     .section h2 {
       font-size: 1.4rem;
       font-weight: 700;
