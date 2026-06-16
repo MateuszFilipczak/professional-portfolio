@@ -390,19 +390,29 @@
       margin-top: 0;
     }
 
-    .exp-tags {
-      grid-column: 1 / -1;
-      margin-top: 12px;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-
     .exp-promo {
       grid-column: 1;
-      margin-top: 2px;
-      font-size: 0.85rem;
+      margin-top: 5px;
+      font-size: 0.8rem;
       color: var(--text-muted);
-      opacity: 0.7;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .exp-promo::before {
+      content: '↑';
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: rgba(140, 110, 220, 0.15);
+      color: var(--accent);
+      font-size: 0.65rem;
+      font-weight: 700;
+      flex-shrink: 0;
     }
 
     /* ── Skills ── */
@@ -912,7 +922,6 @@
           <li>Currently driving AI-augmented SOC transformation by implementing agentic AI workflows for LLM-assisted alert triage and enrichment, while analyzing historical incident data to identify shadow IT ownership</li>
           <li>Mentored security analyst into a high-performing SOAR automation engineer capable of building complex integrations and AI-driven solutions</li>
         </ul>
-        <div class="exp-tags">Security Automation | Cortex XSOAR 8 | Python | Microsoft Graph API | GraphQL | API Integrations | CI/CD | DevSecOps | Azure | SQL | Power BI | MCP | AI</div>
       </div>
 
       <div class="exp-entry">
@@ -929,7 +938,6 @@
 <li>Executed seamless IDS migration from on-premises to cloud environment while maintaining uninterrupted security monitoring</li>
           <li>Performed proactive threat hunting to identify APT activity and anomalous behavior across security platforms</li>
         </ul>
-        <div class="exp-tags">SOC Operations | Incident Response | Vulnerability Management | Threat Hunting | EDR | Security Automation | Python | PowerShell</div>
       </div>
 
       <div class="exp-entry">
@@ -955,7 +963,6 @@
             </ul>
           </div>
         </div>
-        <div class="exp-tags">OWASP | GDPR | ASP.NET | SailPoint IdentityIQ | PowerShell | Active Directory | SAP | RACF</div>
       </div>
 
       <div class="exp-entry">
@@ -966,7 +973,6 @@
         <ul class="exp-bullets">
           <li>Provided first-line IT support for a global user base, troubleshooting and resolving issues across PCs, MacBooks, mobile devices, and printers</li>
         </ul>
-        <div class="exp-tags">Windows | macOS | Active Directory | Hardware Support</div>
       </div>
 
     </div>
