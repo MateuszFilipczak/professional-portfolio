@@ -9,7 +9,7 @@
   <meta property="og:description" content="Cybersecurity Engineer specializing in Cortex XSOAR, API-driven SOC engineering, Security Analytics, Technical Leadership and SecDevOps. 10+ years of experience in cybersecurity." />
   <meta property="og:type" content="website" />
   <script>document.documentElement.classList.add('first-visit');</script>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%234a90d9' d='M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%238c6edc' d='M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z'/></svg>">
   <style>
     :root {
       --bg: #f5f5f5;
@@ -21,8 +21,8 @@
       --banner-hover-shadow: rgba(0, 0, 0, 0.12);
       --toggle-track: #c8c8c8;
       --toggle-thumb: #ffffff;
-      --toggle-track-active: #4a90d9;
-      --accent: #4a90d9;
+      --toggle-track-active: #8c6edc;
+      --accent: #8c6edc;
     }
 
     [data-theme="dark"] {
@@ -35,7 +35,7 @@
       --banner-hover-shadow: rgba(0, 0, 0, 0.4);
       --toggle-track: #555;
       --toggle-thumb: #e8e8e8;
-      --toggle-track-active: #4a90d9;
+      --toggle-track-active: #8c6edc;
     }
 
     html { scroll-behavior: smooth; }
@@ -314,8 +314,8 @@
     }
 
     @keyframes dot-pulse {
-      0%, 100% { box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.25); }
-      50%       { box-shadow: 0 0 0 7px rgba(74, 144, 217, 0); }
+      0%, 100% { box-shadow: 0 0 0 3px rgba(140, 110, 220, 0.25); }
+      50%       { box-shadow: 0 0 0 7px rgba(140, 110, 220, 0); }
     }
 
     .exp-title {
@@ -391,18 +391,62 @@
 
     /* ── Skills ── */
     .skills-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .skill-category {
+      background: var(--banner-bg);
+      border: 1px solid var(--banner-border);
+      border-radius: 12px;
+      padding: 20px 22px;
+      transition: background 0.25s, border-color 0.25s;
     }
 
     .skill-category h3 {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-bottom: 10px;
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Unified accent color for all skill categories */
+    .skill-category { --cat-rgb: 140, 110, 220; }
+
+    .skill-level {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: rgb(var(--cat-rgb));
+      text-transform: uppercase;
+    }
+
+    .skill-bar {
+      height: 3px;
+      background: var(--banner-border);
+      border-radius: 2px;
+      margin: 10px 0 14px;
+      overflow: hidden;
+      transition: background 0.25s;
+    }
+
+    .skill-bar-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, rgb(var(--cat-rgb)), rgba(var(--cat-rgb), 0.4));
+      border-radius: 2px;
+      transition: width 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.25s;
+    }
+
+    .skill-category.is-visible .skill-bar-fill {
+      width: var(--bar-width, 80%);
     }
 
     .skill-tags {
@@ -412,12 +456,18 @@
     }
 
     .skill-tag {
-      padding: 6px 14px;
-      background: var(--banner-bg);
-      border: 1px solid var(--banner-border);
+      padding: 5px 12px;
+      background: rgba(var(--cat-rgb), 0.08);
+      border: 1px solid rgba(var(--cat-rgb), 0.22);
       border-radius: 20px;
-      font-size: 0.85rem;
-      transition: background 0.25s, border-color 0.25s;
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .skill-tag:hover {
+      background: rgba(var(--cat-rgb), 0.16);
+      border-color: rgba(var(--cat-rgb), 0.45);
     }
 
     /* ── Projects ── */
@@ -616,6 +666,7 @@
       .banners { flex-direction: column; }
       .exp-entry { grid-template-columns: 1fr; }
       .exp-date { grid-row: auto; grid-column: auto; text-align: left; }
+      .skills-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -790,8 +841,9 @@
     <h2>Skills</h2>
     <div class="skills-grid">
 
-      <div class="skill-category">
-        <h3>Security Automation & SOAR</h3>
+      <div class="skill-category" style="--bar-width: 95%">
+        <h3>Security Automation & SOAR <span class="skill-level">Expert</span></h3>
+        <div class="skill-bar"><div class="skill-bar-fill"></div></div>
         <div class="skill-tags">
           <span class="skill-tag">Cortex XSOAR 8</span>
           <span class="skill-tag">Python</span>
@@ -803,8 +855,9 @@
         </div>
       </div>
 
-      <div class="skill-category">
-        <h3>SOC & Detection Engineering</h3>
+      <div class="skill-category" style="--bar-width: 85%">
+        <h3>SOC & Detection Engineering <span class="skill-level">Advanced</span></h3>
+        <div class="skill-bar"><div class="skill-bar-fill"></div></div>
         <div class="skill-tags">
           <span class="skill-tag">Incident Response</span>
           <span class="skill-tag">Threat Hunting</span>
@@ -817,8 +870,9 @@
         </div>
       </div>
 
-      <div class="skill-category">
-        <h3>Security Data & Analytics</h3>
+      <div class="skill-category" style="--bar-width: 80%">
+        <h3>Security Data & Analytics <span class="skill-level">Advanced</span></h3>
+        <div class="skill-bar"><div class="skill-bar-fill"></div></div>
         <div class="skill-tags">
           <span class="skill-tag">SQL</span>
           <span class="skill-tag">Power BI</span>
@@ -828,8 +882,9 @@
         </div>
       </div>
 
-      <div class="skill-category">
-        <h3>Cloud & DevSecOps</h3>
+      <div class="skill-category" style="--bar-width: 75%">
+        <h3>Cloud & DevSecOps <span class="skill-level">Proficient</span></h3>
+        <div class="skill-bar"><div class="skill-bar-fill"></div></div>
         <div class="skill-tags">
           <span class="skill-tag">Azure</span>
           <span class="skill-tag">Microsoft Graph API</span>
@@ -841,8 +896,9 @@
         </div>
       </div>
 
-      <div class="skill-category">
-        <h3>AI & Emerging Technologies</h3>
+      <div class="skill-category" style="--bar-width: 65%">
+        <h3>AI & Emerging Technologies <span class="skill-level">Active</span></h3>
+        <div class="skill-bar"><div class="skill-bar-fill"></div></div>
         <div class="skill-tags">
           <span class="skill-tag">Agentic AI Workflows</span>
           <span class="skill-tag">MCP Integrations</span>
@@ -850,8 +906,9 @@
         </div>
       </div>
 
-      <div class="skill-category">
-        <h3>Technical Leadership</h3>
+      <div class="skill-category" style="--bar-width: 85%">
+        <h3>Technical Leadership <span class="skill-level">Advanced</span></h3>
+        <div class="skill-bar"><div class="skill-bar-fill"></div></div>
         <div class="skill-tags">
           <span class="skill-tag">Team Building & Mentoring</span>
           <span class="skill-tag">Architecture Reviews</span>
@@ -1024,7 +1081,7 @@
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(74,144,217,0.45)';
+        ctx.fillStyle = 'rgba(140,110,220,0.45)';
         ctx.fill();
 
         for (let j = i + 1; j < particles.length; j++) {
@@ -1036,7 +1093,7 @@
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(q.x, q.y);
-            ctx.strokeStyle = `rgba(74,144,217,${(1 - d / MAX_DIST) * 0.13})`;
+            ctx.strokeStyle = `rgba(140,110,220,${(1 - d / MAX_DIST) * 0.13})`;
             ctx.lineWidth = 0.7;
             ctx.stroke();
           }
