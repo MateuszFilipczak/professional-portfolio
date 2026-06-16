@@ -1243,8 +1243,9 @@
       });
     }
 
-    (function frame() {
-      requestAnimationFrame(frame);
+    let rafId = null;
+    function frame() {
+      rafId = requestAnimationFrame(frame);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (let i = 0; i < particles.length; i++) {
@@ -1274,7 +1275,19 @@
           }
         }
       }
-    })();
+    }
+
+    // Only run the loop while the hero is on screen — frees the main thread
+    // (and battery) once the user scrolls down to the rest of the page.
+    const heroObserver = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && rafId === null) {
+        frame();
+      } else if (!entry.isIntersecting && rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    });
+    heroObserver.observe(canvas);
   }
 
   // ── Mobile collapse ──
@@ -1318,25 +1331,24 @@
       });
     }
 
-    // Experience bullets — single wrapper animates height (one layout recalc per frame)
-    // opacity stagger on items is GPU-composited (free on mobile)
+    // Experience bullets — animate the <ul> height itself.
+    // Bullets stay valid <li> children; only ONE element (the ul) animates,
+    // so the browser does a single layout recalc per frame. Opacity stagger
+    // on the hidden items is GPU-composited and free.
     document.querySelectorAll('.exp-bullets').forEach(list => {
       const items = Array.from(list.querySelectorAll('li'));
+      if (items.length <= 2) return;
       const extra = items.slice(2);
-      if (!extra.length) return;
 
-      // Wrap all extra bullets in one container
-      const wrap = document.createElement('div');
-      wrap.style.overflow = 'hidden';
-      list.appendChild(wrap);
-      extra.forEach(li => {
-        li.style.opacity = '0';
-        wrap.appendChild(li);
-      });
+      // Measure collapsed height = distance from list top to the 3rd item's top
+      const collapsedH = Math.round(
+        extra[0].getBoundingClientRect().top - list.getBoundingClientRect().top
+      );
 
-      // Measure full height while items are in the DOM
-      const fullH = wrap.scrollHeight;
-      wrap.style.height = '0';
+      list.style.overflow = 'hidden';
+      list.style.height = collapsedH + 'px';
+      list.style.willChange = 'height';
+      extra.forEach(li => { li.style.opacity = '0'; });
 
       let open = false;
       const btn = makeBtn(`Show ${extra.length} more`);
@@ -1344,28 +1356,20 @@
 
       btn.addEventListener('click', () => {
         open = !open;
+        list.style.transition = 'height 0.42s cubic-bezier(0.25,0.46,0.45,0.94)';
         if (open) {
-          // One height animation on wrapper + staggered opacity on items
-          wrap.style.transition = 'height 0.4s cubic-bezier(0.25,0.46,0.45,0.94)';
-          wrap.style.height = fullH + 'px';
+          // scrollHeight reports full content height even while clipped
+          list.style.height = list.scrollHeight + 'px';
           extra.forEach((li, i) => {
             li.style.transition = `opacity 0.3s ease ${(i * 0.07).toFixed(2)}s`;
             li.style.opacity = '0.8';
           });
           btn.textContent = 'Show less';
         } else {
-          // Pin exact current height, then RAF to ensure smooth collapse
-          const curH = wrap.offsetHeight;
-          wrap.style.transition = 'none';
-          wrap.style.height = curH + 'px';
-          wrap.offsetHeight; // single reflow
-          requestAnimationFrame(() => {
-            wrap.style.transition = 'height 0.4s ease';
-            wrap.style.height = '0';
-            extra.forEach(li => {
-              li.style.transition = 'opacity 0.28s ease';
-              li.style.opacity = '0';
-            });
+          list.style.height = collapsedH + 'px';
+          extra.forEach(li => {
+            li.style.transition = 'opacity 0.25s ease';
+            li.style.opacity = '0';
           });
           btn.textContent = `Show ${extra.length} more`;
         }
