@@ -798,15 +798,20 @@
       .skills-grid { grid-template-columns: 1fr; }
       .contact-card { grid-template-columns: 1fr; gap: 24px; }
 
-      .about-text.is-collapsed {
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
+      .about-text {
+        max-height: 800px;
         overflow: hidden;
+        transition: max-height 0.5s ease, -webkit-mask-image 0.3s ease;
+      }
+
+      .about-text.is-collapsed {
+        max-height: 80px;
+        -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
       }
 
       .exp-bullets li {
-        max-height: 150px;
+        max-height: 400px;
         overflow: hidden;
         transition: max-height 0.4s ease, opacity 0.35s ease;
       }
@@ -1309,7 +1314,10 @@
     // About paragraph
     const about = document.querySelector('.about-text');
     if (about) {
+      about.style.transition = 'none';
       about.classList.add('is-collapsed');
+      about.offsetHeight;
+      about.style.transition = '';
       const btn = makeBtn('Read more');
       about.after(btn);
       btn.addEventListener('click', () => {
