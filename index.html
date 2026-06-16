@@ -507,12 +507,48 @@
       border-radius: 20px;
       font-size: 0.82rem;
       font-weight: 500;
-      transition: background 0.2s, border-color 0.2s;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
     }
 
-    .skill-tag:hover {
+    .skill-tag:hover,
+    .skill-tag:focus-visible {
       background: rgba(var(--cat-rgb), 0.16);
       border-color: rgba(var(--cat-rgb), 0.45);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    /* ── Skill info popover ── */
+    .skill-popover {
+      position: absolute;
+      z-index: 200;
+      max-width: 260px;
+      padding: 12px 14px;
+      background: var(--banner-bg);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(140, 110, 220, 0.25);
+      font-size: 0.82rem;
+      line-height: 1.55;
+      color: var(--text);
+      opacity: 0;
+      transform: translateY(6px) scale(0.97);
+      transform-origin: top center;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      pointer-events: none;
+    }
+
+    .skill-popover.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .skill-popover-title {
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 0.8rem;
+      margin-bottom: 4px;
     }
 
     /* ── Projects ── */
@@ -1379,6 +1415,73 @@
         }
       });
     });
+  })();
+
+  // ── Skill info popover ──
+  (function () {
+    const tags = document.querySelectorAll('.skill-tag');
+    if (!tags.length) return;
+
+    // Describe how each skill was used. Keys are the exact tag text.
+    // Fill these in over time; any tag without an entry shows the fallback.
+    const skillInfo = {
+      // 'Python': 'Built XSOAR automations and standalone GitHub scripts that drive SOC triage and enrichment.',
+      // 'Cortex XSOAR 8': 'Owned the enterprise SOAR program end to end — POC, on-prem rollout, then cloud migration.',
+    };
+    const fallback = 'How I used this — details coming soon.';
+
+    const pop = document.createElement('div');
+    pop.className = 'skill-popover';
+    pop.setAttribute('role', 'tooltip');
+    document.body.appendChild(pop);
+
+    let current = null;
+
+    function show(tag) {
+      const name = tag.textContent.trim();
+      const info = skillInfo[name] || fallback;
+      pop.innerHTML = '<div class="skill-popover-title"></div><span></span>';
+      pop.firstChild.textContent = name;
+      pop.lastChild.innerHTML = info;
+
+      const r = tag.getBoundingClientRect();
+      const pw = pop.offsetWidth, ph = pop.offsetHeight; // ignores transform
+      const margin = 8;
+      let left = window.scrollX + r.left + r.width / 2 - pw / 2;
+      left = Math.max(
+        window.scrollX + margin,
+        Math.min(left, window.scrollX + document.documentElement.clientWidth - pw - margin)
+      );
+      // Prefer above the tag; flip below if there isn't room
+      let top = window.scrollY + r.top - ph - 10;
+      if (r.top - ph - 10 < 0) top = window.scrollY + r.bottom + 10;
+
+      pop.style.left = left + 'px';
+      pop.style.top = top + 'px';
+      pop.classList.add('is-visible');
+      current = tag;
+    }
+
+    function hide() {
+      pop.classList.remove('is-visible');
+      current = null;
+    }
+
+    tags.forEach(tag => {
+      tag.setAttribute('tabindex', '0');
+      tag.addEventListener('mouseenter', () => show(tag));
+      tag.addEventListener('mouseleave', hide);
+      tag.addEventListener('focus', () => show(tag));
+      tag.addEventListener('blur', hide);
+      tag.addEventListener('click', e => {
+        e.stopPropagation();
+        current === tag ? hide() : show(tag);
+      });
+    });
+
+    // Dismiss on outside tap or scroll
+    document.addEventListener('click', () => { if (current) hide(); });
+    window.addEventListener('scroll', () => { if (current) hide(); }, { passive: true });
   })();
 
   // ── Typing animation ──
