@@ -810,7 +810,7 @@
       .nav-toggle { display: flex; align-items: center; }
 
       .site-nav {
-        display: none;
+        display: flex;
         position: absolute;
         top: 100%;
         left: 0;
@@ -823,9 +823,20 @@
         border-bottom: 1px solid var(--banner-border);
         padding: 8px 0;
         z-index: 99;
+        /* Closed state — animated, not display:none (so it can transition
+           and so the backdrop blur actually renders) */
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
       }
 
-      .site-nav.nav-open { display: flex; }
+      .site-nav.nav-open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
 
       .nav-link {
         padding: 12px 24px;
