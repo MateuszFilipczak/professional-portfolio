@@ -520,11 +520,11 @@
       background: var(--banner-bg);
       border: 1px solid var(--banner-border);
       border-radius: 16px;
-      padding: 40px 44px;
-      max-width: 560px;
+      padding: 48px 44px;
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: center;
+      text-align: center;
       transition: background 0.25s, border-color 0.25s;
     }
 
@@ -570,18 +570,19 @@
 
     .contact-secondary {
       display: flex;
-      flex-direction: column;
-      gap: 14px;
+      flex-direction: row;
+      gap: 32px;
       border-top: 1px solid var(--banner-border);
       padding-top: 24px;
       width: 100%;
+      justify-content: center;
       transition: border-color 0.25s;
     }
 
     .contact-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
       font-size: 0.9rem;
       color: var(--text-muted);
     }
@@ -1014,13 +1015,13 @@
     <h2>Contact</h2>
     <div class="contact-card">
       <div class="contact-card-heading">Let's connect</div>
-      <p class="contact-card-tagline">Open to new opportunities, collaborations,<br>or just a good security conversation.</p>
+      <p class="contact-card-tagline">Have a project in mind, a role to fill,<br>or a security problem worth solving together?</p>
       <a href="mailto:mateusz.filipczak@outlook.com" class="contact-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="2" y="4" width="20" height="16" rx="2"/>
           <polyline points="2,4 12,13 22,4"/>
         </svg>
-        mateusz.filipczak@outlook.com
+        Send a message
       </a>
       <div class="contact-secondary">
         <div class="contact-row">
