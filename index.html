@@ -1436,6 +1436,7 @@
     document.body.appendChild(pop);
 
     let current = null;
+    let lastShow = 0;
 
     function show(tag) {
       const name = tag.textContent.trim();
@@ -1460,6 +1461,7 @@
       pop.style.top = top + 'px';
       pop.classList.add('is-visible');
       current = tag;
+      lastShow = Date.now();
     }
 
     function hide() {
@@ -1475,7 +1477,13 @@
       tag.addEventListener('blur', hide);
       tag.addEventListener('click', e => {
         e.stopPropagation();
-        current === tag ? hide() : show(tag);
+        // On touch, focus/mouseenter fire show() right before this click. Only
+        // dismiss if it's a genuine second tap (popover already open a moment).
+        if (current === tag && Date.now() - lastShow > 350) {
+          hide();
+        } else {
+          show(tag);
+        }
       });
     });
 
