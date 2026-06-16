@@ -1342,7 +1342,7 @@
       Object.assign(list.style, {
         overflow: 'hidden',
         height: collapsedH + 'px',
-        transition: `height 0.45s ${EASE}`
+        transition: `height 0.65s ${EASE}`
       });
       extra.forEach(li => { li.style.opacity = '0'; });
 
@@ -1355,14 +1355,14 @@
         if (open) {
           list.style.height = list.scrollHeight + 'px';
           extra.forEach((li, i) => {
-            li.style.transition = `opacity 0.3s ease ${(i * 0.06).toFixed(2)}s`;
+            li.style.transition = `opacity 0.4s ease ${(i * 0.08).toFixed(2)}s`;
             li.style.opacity = '0.8';
           });
           btn.textContent = 'Show less';
         } else {
           list.style.height = collapsedH + 'px';
           extra.forEach(li => {
-            li.style.transition = 'opacity 0.25s ease';
+            li.style.transition = 'opacity 0.3s ease';
             li.style.opacity = '0';
           });
           btn.textContent = `Show ${extra.length} more`;
