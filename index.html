@@ -798,29 +798,6 @@
       .skills-grid { grid-template-columns: 1fr; }
       .contact-card { grid-template-columns: 1fr; gap: 24px; }
 
-      .about-text {
-        max-height: 800px;
-        overflow: hidden;
-        transition: max-height 0.5s ease, -webkit-mask-image 0.3s ease;
-      }
-
-      .about-text.is-collapsed {
-        max-height: 80px;
-        -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
-        mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
-      }
-
-      .exp-bullets li {
-        max-height: 400px;
-        overflow: hidden;
-        transition: max-height 0.4s ease, opacity 0.35s ease;
-      }
-
-      .exp-bullets.is-collapsed li:nth-child(n+3) {
-        max-height: 0;
-        opacity: 0;
-        pointer-events: none;
-      }
 
       .read-more-btn {
         display: inline-flex;
@@ -1311,47 +1288,72 @@
       return btn;
     }
 
-    // About paragraph
+    // About paragraph — measure full height, animate to exact value
     const about = document.querySelector('.about-text');
     if (about) {
-      about.style.transition = 'none';
-      about.classList.add('is-collapsed');
-      about.offsetHeight;
-      about.style.transition = '';
+      const fullH = about.scrollHeight;
+      const shortH = 80;
+      Object.assign(about.style, {
+        maxHeight: shortH + 'px', overflow: 'hidden',
+        webkitMaskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)',
+        maskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)'
+      });
+      let open = false;
       const btn = makeBtn('Read more');
       about.after(btn);
       btn.addEventListener('click', () => {
-        const collapsed = about.classList.toggle('is-collapsed');
-        btn.textContent = collapsed ? 'Read more' : 'Read less';
+        open = !open;
+        about.style.transition = 'max-height 0.5s cubic-bezier(0.25,0.46,0.45,0.94)';
+        if (open) {
+          about.style.maxHeight = fullH + 'px';
+          about.style.webkitMaskImage = 'none';
+          about.style.maskImage = 'none';
+          btn.textContent = 'Read less';
+        } else {
+          about.style.maxHeight = shortH + 'px';
+          about.style.webkitMaskImage = 'linear-gradient(to bottom, black 40%, transparent 100%)';
+          about.style.maskImage = 'linear-gradient(to bottom, black 40%, transparent 100%)';
+          btn.textContent = 'Read more';
+        }
       });
     }
 
-    // Experience bullet lists
+    // Experience bullets — measure each item's real height before hiding
     document.querySelectorAll('.exp-bullets').forEach(list => {
-      const items = list.querySelectorAll('li');
-      if (items.length <= 2) return;
-      const extra = items.length - 2;
+      const items = Array.from(list.querySelectorAll('li'));
+      const extra = items.slice(2);
+      if (!extra.length) return;
 
-      // Snap to collapsed state without animating on load
-      items.forEach(li => { li.style.transition = 'none'; });
-      list.classList.add('is-collapsed');
-      list.offsetHeight; // force reflow
-      items.forEach(li => { li.style.transition = ''; });
+      // Measure natural heights while still visible
+      const heights = extra.map(li => li.scrollHeight);
 
-      const btn = makeBtn(`Show ${extra} more`);
+      // Instantly collapse without animation
+      extra.forEach(li => Object.assign(li.style, {
+        maxHeight: '0', opacity: '0', overflow: 'hidden', transition: 'none'
+      }));
+
+      let open = false;
+      const btn = makeBtn(`Show ${extra.length} more`);
       list.after(btn);
+
       btn.addEventListener('click', () => {
-        const collapsed = list.classList.toggle('is-collapsed');
-        if (!collapsed) {
-          // Expanding — stagger each revealed bullet
-          items.forEach((li, i) => {
-            if (i >= 2) li.style.transitionDelay = `${(i - 2) * 0.07}s`;
+        open = !open;
+        if (open) {
+          extra.forEach((li, i) => {
+            const delay = (i * 0.07).toFixed(2);
+            li.style.transition = `max-height 0.38s cubic-bezier(0.25,0.46,0.45,0.94) ${delay}s, opacity 0.3s ease ${delay}s`;
+            li.style.maxHeight = (heights[i] + 8) + 'px';
+            li.style.opacity = '0.8';
           });
+          btn.textContent = 'Show less';
         } else {
-          // Collapsing — remove delays so it snaps back cleanly
-          items.forEach(li => { li.style.transitionDelay = ''; });
+          extra.forEach(li => {
+            li.style.transition = 'max-height 0.25s ease, opacity 0.2s ease';
+            li.style.maxHeight = '0';
+            li.style.opacity = '0';
+          });
+          btn.textContent = `Show ${extra.length} more`;
         }
-        btn.textContent = collapsed ? `Show ${extra} more` : 'Show less';
       });
     });
   })();
