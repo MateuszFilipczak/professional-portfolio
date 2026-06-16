@@ -64,11 +64,23 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: var(--header-bg);
       border-bottom: 1px solid var(--banner-border);
+      transition: border-color 0.25s;
+    }
+
+    /* Blur lives on a pseudo-element, NOT on <header> itself. If the header
+       carried backdrop-filter it would become a "backdrop root" and the
+       mobile nav dropdown (a descendant) could no longer blur the page
+       behind it. Keeping the filter off <header> lets the dropdown blur work. */
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: var(--header-bg);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
-      transition: background 0.25s, border-color 0.25s;
+      transition: background 0.25s;
     }
 
     .header-inner {
