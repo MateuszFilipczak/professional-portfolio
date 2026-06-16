@@ -778,6 +778,31 @@
       .exp-date { grid-row: auto; grid-column: auto; text-align: left; }
       .skills-grid { grid-template-columns: 1fr; }
       .contact-card { grid-template-columns: 1fr; gap: 24px; }
+
+      .about-text.is-collapsed {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .exp-bullets.is-collapsed li:nth-child(n+3) { display: none; }
+
+      .read-more-btn {
+        display: inline-flex;
+        align-items: center;
+        background: none;
+        border: none;
+        padding: 6px 0;
+        margin-top: 4px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--accent);
+        cursor: pointer;
+        font-family: inherit;
+      }
+
+      .read-more-btn:hover { opacity: 0.7; }
     }
   </style>
 </head>
@@ -1245,6 +1270,44 @@
       }
     })();
   }
+
+  // ── Mobile collapse ──
+  (function () {
+    if (!window.matchMedia('(max-width: 520px)').matches) return;
+
+    function makeBtn(label) {
+      const btn = document.createElement('button');
+      btn.className = 'read-more-btn';
+      btn.textContent = label;
+      return btn;
+    }
+
+    // About paragraph
+    const about = document.querySelector('.about-text');
+    if (about) {
+      about.classList.add('is-collapsed');
+      const btn = makeBtn('Read more');
+      about.after(btn);
+      btn.addEventListener('click', () => {
+        const collapsed = about.classList.toggle('is-collapsed');
+        btn.textContent = collapsed ? 'Read more' : 'Read less';
+      });
+    }
+
+    // Experience bullet lists
+    document.querySelectorAll('.exp-bullets').forEach(list => {
+      const items = list.querySelectorAll('li');
+      if (items.length <= 2) return;
+      const extra = items.length - 2;
+      list.classList.add('is-collapsed');
+      const btn = makeBtn(`Show ${extra} more`);
+      list.after(btn);
+      btn.addEventListener('click', () => {
+        const collapsed = list.classList.toggle('is-collapsed');
+        btn.textContent = collapsed ? `Show ${extra} more` : 'Show less';
+      });
+    });
+  })();
 
   // ── Typing animation ──
   const taglineEl = document.querySelector('.home-tagline');
