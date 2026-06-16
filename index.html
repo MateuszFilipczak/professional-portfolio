@@ -1158,8 +1158,7 @@
   const toggle = document.getElementById('theme-toggle');
 
   const saved = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (saved ? saved === 'dark' : prefersDark) {
+  if (saved !== 'light') {
     document.documentElement.setAttribute('data-theme', 'dark');
     toggle.checked = true;
   }
