@@ -1301,10 +1301,10 @@
       return btn;
     }
 
-    // About paragraph — same philosophy as the bullets below:
-    // EXPAND animates max-height (one growth, feels nice). COLLAPSE snaps shut
-    // (transition:none) so we don't reflow the whole page below on every frame.
-    // The gradient fade-mask reappearing makes the instant collapse look clean.
+    // Shared easing for every expand/collapse on the page.
+    const EASE = 'cubic-bezier(0.25,0.46,0.45,0.94)';
+
+    // About paragraph — animate max-height smoothly in BOTH directions.
     const about = document.querySelector('.about-text');
     if (about) {
       const fullH = about.scrollHeight;
@@ -1312,6 +1312,7 @@
       const mask = 'linear-gradient(to bottom, black 40%, transparent 100%)';
       Object.assign(about.style, {
         maxHeight: shortH + 'px', overflow: 'hidden',
+        transition: `max-height 0.45s ${EASE}`,
         webkitMaskImage: mask, maskImage: mask
       });
       let open = false;
@@ -1319,27 +1320,15 @@
       about.after(btn);
       btn.addEventListener('click', () => {
         open = !open;
-        if (open) {
-          about.style.transition = 'max-height 0.5s cubic-bezier(0.25,0.46,0.45,0.94)';
-          about.style.maxHeight = fullH + 'px';
-          about.style.webkitMaskImage = 'none';
-          about.style.maskImage = 'none';
-          btn.textContent = 'Read less';
-        } else {
-          about.style.transition = 'none';
-          about.style.maxHeight = shortH + 'px';
-          about.style.webkitMaskImage = mask;
-          about.style.maskImage = mask;
-          btn.textContent = 'Read more';
-        }
+        about.style.maxHeight = (open ? fullH : shortH) + 'px';
+        about.style.webkitMaskImage = open ? 'none' : mask;
+        about.style.maskImage = open ? 'none' : mask;
+        btn.textContent = open ? 'Read less' : 'Read more';
       });
     }
 
-    // Experience bullets — avoid animating layout on a weak mobile thread.
-    // Animating the <ul> height reflows everything below it on every frame.
-    // Instead: COLLAPSE = fade the extra bullets out (opacity is compositor-only,
-    // zero layout) then snap the height closed in ONE step after the fade.
-    // EXPAND = grow the height once with a fade-in. One reflow per action, not 60.
+    // Experience bullets — animate the <ul> height smoothly in BOTH directions,
+    // same approach as About. Single element animates; hidden bullets fade.
     document.querySelectorAll('.exp-bullets').forEach(list => {
       const items = Array.from(list.querySelectorAll('li'));
       if (items.length <= 2) return;
@@ -1350,21 +1339,20 @@
         extra[0].getBoundingClientRect().top - list.getBoundingClientRect().top
       );
 
-      list.style.overflow = 'hidden';
-      list.style.height = collapsedH + 'px';
+      Object.assign(list.style, {
+        overflow: 'hidden',
+        height: collapsedH + 'px',
+        transition: `height 0.45s ${EASE}`
+      });
       extra.forEach(li => { li.style.opacity = '0'; });
 
       let open = false;
-      let timer = null;
       const btn = makeBtn(`Show ${extra.length} more`);
       list.after(btn);
 
       btn.addEventListener('click', () => {
         open = !open;
-        clearTimeout(timer);
         if (open) {
-          // Open height in one transition, fade bullets in (staggered, compositor)
-          list.style.transition = 'height 0.4s cubic-bezier(0.25,0.46,0.45,0.94)';
           list.style.height = list.scrollHeight + 'px';
           extra.forEach((li, i) => {
             li.style.transition = `opacity 0.3s ease ${(i * 0.06).toFixed(2)}s`;
@@ -1372,15 +1360,11 @@
           });
           btn.textContent = 'Show less';
         } else {
-          // Fade out first (cheap), then snap the height closed once (one reflow)
+          list.style.height = collapsedH + 'px';
           extra.forEach(li => {
-            li.style.transition = 'opacity 0.22s ease';
+            li.style.transition = 'opacity 0.25s ease';
             li.style.opacity = '0';
           });
-          timer = setTimeout(() => {
-            list.style.transition = 'none';
-            list.style.height = collapsedH + 'px';
-          }, 200);
           btn.textContent = `Show ${extra.length} more`;
         }
       });
