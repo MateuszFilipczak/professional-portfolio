@@ -1301,31 +1301,35 @@
       return btn;
     }
 
-    // About paragraph — measure full height, animate to exact value
+    // About paragraph — same philosophy as the bullets below:
+    // EXPAND animates max-height (one growth, feels nice). COLLAPSE snaps shut
+    // (transition:none) so we don't reflow the whole page below on every frame.
+    // The gradient fade-mask reappearing makes the instant collapse look clean.
     const about = document.querySelector('.about-text');
     if (about) {
       const fullH = about.scrollHeight;
       const shortH = 80;
+      const mask = 'linear-gradient(to bottom, black 40%, transparent 100%)';
       Object.assign(about.style, {
         maxHeight: shortH + 'px', overflow: 'hidden',
-        webkitMaskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)',
-        maskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)'
+        webkitMaskImage: mask, maskImage: mask
       });
       let open = false;
       const btn = makeBtn('Read more');
       about.after(btn);
       btn.addEventListener('click', () => {
         open = !open;
-        about.style.transition = 'max-height 0.5s cubic-bezier(0.25,0.46,0.45,0.94)';
         if (open) {
+          about.style.transition = 'max-height 0.5s cubic-bezier(0.25,0.46,0.45,0.94)';
           about.style.maxHeight = fullH + 'px';
           about.style.webkitMaskImage = 'none';
           about.style.maskImage = 'none';
           btn.textContent = 'Read less';
         } else {
+          about.style.transition = 'none';
           about.style.maxHeight = shortH + 'px';
-          about.style.webkitMaskImage = 'linear-gradient(to bottom, black 40%, transparent 100%)';
-          about.style.maskImage = 'linear-gradient(to bottom, black 40%, transparent 100%)';
+          about.style.webkitMaskImage = mask;
+          about.style.maskImage = mask;
           btn.textContent = 'Read more';
         }
       });
