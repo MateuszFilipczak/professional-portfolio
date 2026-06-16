@@ -805,7 +805,17 @@
         overflow: hidden;
       }
 
-      .exp-bullets.is-collapsed li:nth-child(n+3) { display: none; }
+      .exp-bullets li {
+        max-height: 150px;
+        overflow: hidden;
+        transition: max-height 0.4s ease, opacity 0.35s ease;
+      }
+
+      .exp-bullets.is-collapsed li:nth-child(n+3) {
+        max-height: 0;
+        opacity: 0;
+        pointer-events: none;
+      }
 
       .read-more-btn {
         display: inline-flex;
@@ -1313,11 +1323,26 @@
       const items = list.querySelectorAll('li');
       if (items.length <= 2) return;
       const extra = items.length - 2;
+
+      // Snap to collapsed state without animating on load
+      items.forEach(li => { li.style.transition = 'none'; });
       list.classList.add('is-collapsed');
+      list.offsetHeight; // force reflow
+      items.forEach(li => { li.style.transition = ''; });
+
       const btn = makeBtn(`Show ${extra} more`);
       list.after(btn);
       btn.addEventListener('click', () => {
         const collapsed = list.classList.toggle('is-collapsed');
+        if (!collapsed) {
+          // Expanding — stagger each revealed bullet
+          items.forEach((li, i) => {
+            if (i >= 2) li.style.transitionDelay = `${(i - 2) * 0.07}s`;
+          });
+        } else {
+          // Collapsing — remove delays so it snaps back cleanly
+          items.forEach(li => { li.style.transitionDelay = ''; });
+        }
         btn.textContent = collapsed ? `Show ${extra} more` : 'Show less';
       });
     });
