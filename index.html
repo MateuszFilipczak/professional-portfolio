@@ -38,7 +38,16 @@
       --toggle-track-active: #8c6edc;
     }
 
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+      scrollbar-color: var(--accent) var(--bg);
+      scrollbar-width: thin;
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #b47aff; }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
