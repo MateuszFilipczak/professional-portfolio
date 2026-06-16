@@ -496,17 +496,25 @@
       border: 1px solid var(--banner-border);
       border-radius: 12px;
       padding: 24px;
-      transition: background 0.25s, border-color 0.25s;
+      transition: background 0.22s, border-color 0.22s, transform 0.22s, box-shadow 0.22s;
     }
 
     .project-card:hover {
-      border-color: var(--text);
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px rgba(140, 110, 220, 0.18);
+      background: rgba(140, 110, 220, 0.03);
     }
 
     .project-card h3 {
       font-size: 1rem;
       font-weight: 600;
       margin-bottom: 8px;
+      transition: color 0.22s;
+    }
+
+    .project-card:hover h3 {
+      color: var(--accent);
     }
 
     .project-card p {
