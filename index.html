@@ -1347,10 +1347,22 @@
           });
           btn.textContent = 'Show less';
         } else {
-          extra.forEach(li => {
-            li.style.transition = 'max-height 0.4s ease, opacity 0.32s ease';
-            li.style.maxHeight = '0';
-            li.style.opacity = '0';
+          // Read all current heights first (avoid layout thrashing)
+          const currentHeights = extra.map(li => li.offsetHeight);
+          // Pin to current height with no transition
+          extra.forEach((li, i) => {
+            li.style.transition = 'none';
+            li.style.maxHeight = currentHeights[i] + 'px';
+          });
+          // Single reflow to commit the pinned values
+          list.offsetHeight;
+          // Animate to 0 on the next frame so the browser sees the FROM state
+          requestAnimationFrame(() => {
+            extra.forEach(li => {
+              li.style.transition = 'max-height 0.4s ease, opacity 0.32s ease';
+              li.style.maxHeight = '0';
+              li.style.opacity = '0';
+            });
           });
           btn.textContent = `Show ${extra.length} more`;
         }
