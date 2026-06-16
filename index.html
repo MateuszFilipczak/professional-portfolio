@@ -1331,10 +1331,11 @@
       });
     }
 
-    // Experience bullets — animate the <ul> height itself.
-    // Bullets stay valid <li> children; only ONE element (the ul) animates,
-    // so the browser does a single layout recalc per frame. Opacity stagger
-    // on the hidden items is GPU-composited and free.
+    // Experience bullets — avoid animating layout on a weak mobile thread.
+    // Animating the <ul> height reflows everything below it on every frame.
+    // Instead: COLLAPSE = fade the extra bullets out (opacity is compositor-only,
+    // zero layout) then snap the height closed in ONE step after the fade.
+    // EXPAND = grow the height once with a fade-in. One reflow per action, not 60.
     document.querySelectorAll('.exp-bullets').forEach(list => {
       const items = Array.from(list.querySelectorAll('li'));
       if (items.length <= 2) return;
@@ -1347,30 +1348,35 @@
 
       list.style.overflow = 'hidden';
       list.style.height = collapsedH + 'px';
-      list.style.willChange = 'height';
       extra.forEach(li => { li.style.opacity = '0'; });
 
       let open = false;
+      let timer = null;
       const btn = makeBtn(`Show ${extra.length} more`);
       list.after(btn);
 
       btn.addEventListener('click', () => {
         open = !open;
-        list.style.transition = 'height 0.42s cubic-bezier(0.25,0.46,0.45,0.94)';
+        clearTimeout(timer);
         if (open) {
-          // scrollHeight reports full content height even while clipped
+          // Open height in one transition, fade bullets in (staggered, compositor)
+          list.style.transition = 'height 0.4s cubic-bezier(0.25,0.46,0.45,0.94)';
           list.style.height = list.scrollHeight + 'px';
           extra.forEach((li, i) => {
-            li.style.transition = `opacity 0.3s ease ${(i * 0.07).toFixed(2)}s`;
+            li.style.transition = `opacity 0.3s ease ${(i * 0.06).toFixed(2)}s`;
             li.style.opacity = '0.8';
           });
           btn.textContent = 'Show less';
         } else {
-          list.style.height = collapsedH + 'px';
+          // Fade out first (cheap), then snap the height closed once (one reflow)
           extra.forEach(li => {
-            li.style.transition = 'opacity 0.25s ease';
+            li.style.transition = 'opacity 0.22s ease';
             li.style.opacity = '0';
           });
+          timer = setTimeout(() => {
+            list.style.transition = 'none';
+            list.style.height = collapsedH + 'px';
+          }, 200);
           btn.textContent = `Show ${extra.length} more`;
         }
       });
