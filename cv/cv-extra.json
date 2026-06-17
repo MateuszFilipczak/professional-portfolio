@@ -1,0 +1,27 @@
+{
+  "_comment": "CV-only content + overrides. Education and certifications are NOT on the website; they live here and are merged into the generated CV. Edit the values below, then run `python3 cv/generate_cv.py` (or the /cv command).",
+
+  "education": [
+    {
+      "degree": "Degree / Field of Study",
+      "institution": "Institution",
+      "period": "Year – Year",
+      "details": []
+    }
+  ],
+
+  "certifications": [
+    { "name": "Certification name", "issuer": "Issuing body", "year": "Year" }
+  ],
+
+  "contact": {
+    "_comment": "Optional. Anything set here overrides/adds to what is parsed from the page. Leave a field out (or empty) to use the page value. Supported: email, website, location, phone, linkedin.",
+    "phone": "",
+    "linkedin": ""
+  },
+
+  "options": {
+    "include_projects": true,
+    "section_order": ["summary", "experience", "projects", "skills", "education", "certifications"]
+  }
+}

@@ -1,1 +1,6 @@
 .DS_Store
+
+# Generated CV (build artifact — regenerate with /cv or python3 cv/generate_cv.py)
+assets/*.docx
+# Word lock/temp files
+~$*
