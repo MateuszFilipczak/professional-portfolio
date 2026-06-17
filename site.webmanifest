@@ -1,0 +1,14 @@
+{
+  "name": "Mateusz Filipczak",
+  "short_name": "filipczak.dev",
+  "description": "Mateusz Filipczak — Cybersecurity, Security Automation & SecDevOps Engineer",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "theme_color": "#1e1e1e",
+  "background_color": "#1e1e1e",
+  "display": "standalone",
+  "start_url": "./"
+}

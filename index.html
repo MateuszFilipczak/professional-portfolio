@@ -30,6 +30,12 @@
     } catch (e) {}
   </script>
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <!-- Square PNG icons so browsers (Brave/Chrome new-tab tiles, etc.) use a
+       proper square icon instead of squishing the wide SVG into a tile. -->
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#1e1e1e">
   <!-- iOS "Add to Home Screen" uses this PNG (it ignores the SVG favicon above) -->
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <!-- Label shown under the icon on the iOS home screen (else it falls back to the host/title) -->
