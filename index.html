@@ -782,6 +782,25 @@
       height: 100%;
     }
 
+    /* Brand mark centered over the particle field. It lives inside #intro, so
+       the convergence/fade in finish() carries it out with the overlay. */
+    .intro-logo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(72vw, 600px);
+      height: auto;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      pointer-events: none;
+      animation: introLogoIn 0.7s ease both;
+    }
+
+    /* `from`-only so it settles at the element's natural (centered, full) state */
+    @keyframes introLogoIn {
+      from { opacity: 0; transform: translate(-50%, -50%) scale(0.92); }
+    }
+
     /* Choreographed reveal: elements marked .intro-rise stay hidden + lowered
        while the intro is active (html.intro), then play a staggered rise-in
        animation once the intro finishes (html.intro-done). Using a keyframe
@@ -1008,6 +1027,7 @@
 
 <div id="intro" aria-hidden="true">
   <canvas class="intro-canvas"></canvas>
+  <img class="intro-logo" src="assets/logo.svg" alt="" aria-hidden="true">
 </div>
 
 <header class="intro-rise">
