@@ -16,7 +16,7 @@ A minimal, single-page personal portfolio — no frameworks, no dependencies, no
 - **Purple accent throughout** — unified accent color on nav, toggle, timeline, cards, and scrollbar
 - **Mobile-friendly long text** — About and experience bullets collapse with smooth "Read more" toggles
 - **Fully responsive** — hamburger nav and single-column layouts on small screens
-- **Accessible & considerate** — respects `prefers-reduced-motion` (skips the intro), keyboard-navigable
+- **Accessible & considerate** — respects `prefers-reduced-motion` (skips the intro and the scroll-reveal animations), keyboard-navigable
 - **Zero dependencies** — pure HTML, CSS, and vanilla JS; works offline
 
 ## Getting started
