@@ -389,6 +389,12 @@
     .exp-title {
       font-size: 1rem;
       font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    /* Highlight the title of the entry whose dot is currently pulsing */
+    .exp-entry.dot-active .exp-title {
+      color: var(--accent);
     }
 
     .exp-company {
@@ -796,17 +802,43 @@
     html.intro-done .banner.intro-rise:nth-child(3) { animation-delay: 0.46s; }
 
     /* ── Scroll animations ── */
+    /* exp-entry / skill-category have no hover transitions, so the simple
+       transition approach is fine. */
     .first-visit .exp-entry,
     .first-visit .skill-category {
       opacity: 0;
       transform: translateY(24px);
-      transition: opacity 0.55s ease, transform 0.55s ease;
+      transition: opacity 0.7s ease, transform 0.7s ease;
     }
 
     .first-visit .exp-entry.is-visible,
     .first-visit .skill-category.is-visible {
       opacity: 1;
       transform: none;
+    }
+
+    /* Cards DO have their own hover transitions (lift/glow), so the entrance
+       uses a keyframe animation instead of a transition — and JS adds
+       .entrance-done on animationend to release it, so hover works afterward. */
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .first-visit .project-card,
+    .first-visit .contact-card {
+      opacity: 0;
+    }
+
+    .first-visit .project-card.is-visible,
+    .first-visit .contact-card.is-visible {
+      animation: riseIn 0.7s ease forwards;
+    }
+
+    .first-visit .project-card.entrance-done,
+    .first-visit .contact-card.entrance-done {
+      animation: none;
+      opacity: 1;
     }
 
     /* ── Footer ── */
@@ -1341,7 +1373,15 @@
       }
     });
   }, { rootMargin: '0px 0px 0px 0px' });
-  document.querySelectorAll('.exp-entry, .skill-category').forEach(el => animObserver.observe(el));
+  document.querySelectorAll('.exp-entry, .skill-category, .project-card, .contact-card').forEach(el => animObserver.observe(el));
+
+  // Once a card's entrance animation finishes, release it so its own hover
+  // transitions (lift/glow) work normally instead of being locked by the fill.
+  document.querySelectorAll('.project-card, .contact-card').forEach(el => {
+    el.addEventListener('animationend', e => {
+      if (e.animationName === 'riseIn') el.classList.add('entrance-done');
+    });
+  });
 
   // Pulse the dot on whichever exp-entry is currently in view
   const dotObserver = new IntersectionObserver((entries) => {
