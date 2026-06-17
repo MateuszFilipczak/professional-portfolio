@@ -1361,28 +1361,35 @@
     });
   });
 
-  // Highlight nav link for the section currently in view
+  // Highlight the nav link for the section currently at the top of the viewport.
+  // A scroll-position check (rather than an IntersectionObserver detection band)
+  // so a short last section like Contact highlights correctly even though it can
+  // never reach the middle of a tall viewport — and so navigating to a section
+  // near the bottom of the page (Projects) doesn't get overridden by Contact.
   const setActiveLink = (id) => {
     navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === `#${id}`));
   };
-  // The last section (Contact) is too short to reach the observer's detection
-  // band when the page is scrolled all the way down, so treat "at the bottom"
-  // as authoritative and force the last link active there.
-  const atPageBottom = () =>
-    window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
-  const lastSectionId = sections.length ? sections[sections.length - 1].id : null;
-
-  const observer = new IntersectionObserver((entries) => {
-    if (atPageBottom()) { if (lastSectionId) setActiveLink(lastSectionId); return; }
-    entries.forEach(entry => {
-      if (entry.isIntersecting) setActiveLink(entry.target.id);
+  // Reference line just below the sticky header; the active section is the last
+  // one whose top has scrolled above it (a freshly navigated-to section lands at
+  // scroll-margin-top: 72px, which is above this line).
+  const ACTIVE_OFFSET = 100;
+  let activeTicking = false;
+  const updateActiveLink = () => {
+    activeTicking = false;
+    let current = sections.length ? sections[0].id : null;
+    sections.forEach(s => {
+      if (s.getBoundingClientRect().top <= ACTIVE_OFFSET) current = s.id;
     });
-  }, { rootMargin: '-20% 0px -70% 0px' });
-
-  sections.forEach(s => observer.observe(s));
-  window.addEventListener('scroll', () => {
-    if (atPageBottom() && lastSectionId) setActiveLink(lastSectionId);
-  }, { passive: true });
+    if (current) setActiveLink(current);
+  };
+  const requestActiveUpdate = () => {
+    if (activeTicking) return;
+    activeTicking = true;
+    requestAnimationFrame(updateActiveLink);
+  };
+  window.addEventListener('scroll', requestActiveUpdate, { passive: true });
+  window.addEventListener('resize', requestActiveUpdate);
+  updateActiveLink();
 
   const animObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
