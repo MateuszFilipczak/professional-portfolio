@@ -1351,6 +1351,7 @@
   const sections = document.querySelectorAll('section[id]');
   const siteNav = document.querySelector('.site-nav');
   const navToggle = document.querySelector('.nav-toggle');
+  const headerInner = document.querySelector('.header-inner');
 
   navToggle.addEventListener('click', () => {
     const open = siteNav.classList.toggle('nav-open');
@@ -1382,8 +1383,19 @@
   // A scroll-position check (rather than an IntersectionObserver detection band)
   // so a short last section like Contact highlights correctly even though it can
   // never reach the middle of a tall viewport.
+  let activeLinkId = null;
   const setActiveLink = (id) => {
+    if (id === activeLinkId) return;            // nothing changed; skip per-frame churn
+    activeLinkId = id;
     navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === `#${id}`));
+    // iOS Safari sits the header on a backdrop-filter compositing layer and does
+    // NOT repaint it when only a class changes — so each previously-active tab's
+    // underline stays painted ("ghosts"), making several tabs look highlighted.
+    // Nudging a transform on the inner bar forces a recomposite that clears them.
+    if (headerInner) {
+      headerInner.style.transform = 'translateZ(0)';
+      requestAnimationFrame(() => { headerInner.style.transform = ''; });
+    }
   };
   // Reference line just below the sticky header; the active section is normally
   // the last one whose top has scrolled above it.
