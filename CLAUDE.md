@@ -14,9 +14,29 @@ No build step. Open `index.html` directly in a browser:
 
 ## Architecture
 
-Everything lives in a single `index.html` — no external dependencies, no framework, no build tool. All CSS is in one `<style>` block in `<head>`; all JS is in one `<script>` block before `</body>`. The PDF resume, the logo files, and `apple-touch-icon.png` live in `assets/`.
+Everything lives in a single `index.html` — no external dependencies, no framework, no build tool. All CSS is in one `<style>` block in `<head>`; all JS is in one `<script>` block before `</body>`. The PDF resume, `logo.svg`, and the PNG icons (`apple-touch-icon.png`, `icon-192.png`, `icon-512.png`) live in `assets/`.
 
-**Logo & icons** — the brand mark is the literal text `<mf/>` set in the hero heading font (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`, `font-weight: 700`, `letter-spacing: -0.03em`) in purple `#8c6edc` — i.e. it matches the `.home-name` "Mateusz Filipczak" type. The **single source of truth is `assets/logo.svg`** (transparent, an SVG `<text>` element with a tight measured `viewBox`). Derived assets: `assets/logo.png` (1024-wide transparent raster), `assets/logo-square.png` (512² transparent), `assets/icon-square.svg` (logo centered on a dark `#1e1e1e` square), and `assets/apple-touch-icon.png` (180×180 **opaque** PNG rendered from `icon-square.svg`; iOS rounds the corners). The **browser-tab favicon references `assets/logo.svg` directly** (`<link rel="icon" type="image/svg+xml" href="assets/logo.svg">`) — no inline data URI, so the favicon always matches the master file. iOS ignores SVG favicons for "Add to Home Screen", so `<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">` supplies the home-screen tile. Because the glyph is system-font text, it renders in San Francisco/Segoe UI/Roboto per platform (matching the site's own heading). For **square contexts** (Brave/Chrome new-tab tiles, PWA install, Android) there are dedicated square PNGs — `assets/icon-192.png` and `assets/icon-512.png` (opaque, rendered from `icon-square.svg`) — declared via `<link rel="icon" sizes=…>` and `site.webmanifest` (root). Without these, browsers stretch the wide SVG favicon into a square tile and it looks squeezed. `<meta name="theme-color">` is set too. To regenerate after editing the design, re-run the build: measure the text `getBBox()` for the `viewBox`, write `logo.svg` + `icon-square.svg`, render all PNGs (`apple-touch-icon` 180, `icon-192`, `icon-512`) via Playwright/WebKit (`element.screenshot`, `omit_background=True` for transparent ones), and flatten the opaque ones to RGB.
+**Logo & icons** — the brand mark is the literal text `<mf/>` set in the hero heading font (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`, `font-weight: 700`, `letter-spacing: -0.03em`) in purple `#8c6edc` — it matches the `.home-name` "Mateusz Filipczak" type. Because the glyph is system-font text, it renders in San Francisco/Segoe UI/Roboto per platform (matching the site's own heading).
+
+**`assets/logo.svg` is the only logo file kept** — transparent, a single SVG `<text>` element with a tight measured `viewBox`. It is the master, reuse it anywhere (incl. docs):
+```svg
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="15.9 19.9 351.8 169.6">
+  <title>mf — Mateusz Filipczak</title>
+  <text x="30" y="150" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" letter-spacing="-0.03em" font-size="120" fill="#8c6edc">&lt;mf/&gt;</text>
+</svg>
+```
+It is referenced as the **browser-tab favicon** (`<link rel="icon" type="image/svg+xml" href="assets/logo.svg">`) and as the **centered `.intro-logo`** in the intro overlay. The `viewBox` came from rendering the `<text>` and reading `getBBox()` (x≈30 y≈34 w≈323 h≈141) + ~10% padding; redo that if the text/font changes.
+
+The other three asset files are **PNG icons derived from the same glyph on a dark `#1e1e1e` square** (opaque RGB, no alpha): `apple-touch-icon.png` (180², iOS "Add to Home Screen" — iOS ignores SVG favicons so this is required and rounds its own corners) and `icon-192.png` / `icon-512.png` (square contexts — Brave/Chrome new-tab tiles, PWA/Android — declared via `<link rel="icon" sizes=…>` + `site.webmanifest` at repo root; without square PNGs browsers stretch the 2:1 SVG into a square tile and it looks squeezed). `<meta name="theme-color" content="#1e1e1e">` is also set.
+
+**Regenerating the PNG icons** (no build-helper file is kept — render this square wrapper SVG at 180/192/512 via Playwright/WebKit `element.screenshot`, then flatten to opaque RGB):
+```svg
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" fill="#1e1e1e"/>
+  <svg x="12" y="31.68" width="76" height="36.64" viewBox="15.9 19.9 351.8 169.6"><text x="30" y="150" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" letter-spacing="-0.03em" font-size="120" fill="#8c6edc">&lt;mf/&gt;</text></svg>
+</svg>
+```
+To export a **transparent PNG** of the logo for docs, render `logo.svg` with `omit_background=True`. Changing the mark means updating `logo.svg` and re-rendering these PNGs.
 
 **Accent color** — the brand accent is purple `#8c6edc` (RGB `140, 110, 220`), exposed as `--accent`. Many effects (glow shadows, canvas particles, the promo badge) use the raw `rgba(140, 110, 220, …)` triplet inline rather than the variable, so changing the accent means updating both the `--accent` declarations and these literal values.
 

@@ -41,7 +41,7 @@ Then open `index.html` directly:
 | Page title & meta description | `<title>`, `<meta>` tags in `index.html` |
 | Section content | Each `<section id="...">` in `index.html` |
 | Accent color | `--accent` in `:root`, plus the literal `rgba(140, 110, 220, …)` values used for glows and the canvas particles |
-| Logo / favicon / home-screen icon | `assets/logo.svg` is the master `<mf/>` mark (with `logo.png` / `logo-square.png` rasters). The browser-tab favicon inlines the same glyph in `<head>`; `assets/apple-touch-icon.png` (180×180, opaque) is the iOS tile. Edit `logo.svg`, then mirror the change into the inline favicon and re-render the PNGs |
+| Logo / favicon / icons | `assets/logo.svg` is the single master `<mf/>` mark (transparent — reuse it anywhere). It's also the browser-tab favicon. `assets/apple-touch-icon.png` (iOS) and `icon-192.png` / `icon-512.png` (manifest/tiles) are square PNGs derived from it. Edit `logo.svg`, then re-render the PNGs (see CLAUDE.md) |
 | Color palette | CSS custom properties in `:root` and `[data-theme="dark"]` |
 | Skill descriptions | The `skillInfo` object in the `<script>` (keyed by skill name) — fills the hover/tap popovers |
 | Banner links (GitHub / CV) | Both are "Coming soon" placeholders; restore the real `href` and remove `banner--soon` / `tabindex="-1"` / `aria-disabled="true"` to activate |
