@@ -44,7 +44,7 @@ The hover-brighten on nav links is written as `html:not(.touch) .nav-link:hover`
 
 **Contact** — a single two-column `.contact-card`: heading + tagline on the left, a purple "Send a message" `mailto:` CTA button plus website/location icon rows on the right.
 
-**Scroll animations** — an inline script in `<head>` adds `first-visit` to `<html>` before CSS loads (prevents FOUC). `.exp-entry` and `.skill-category` start hidden (`opacity: 0; translateY`) and get `is-visible` from an `animObserver` IntersectionObserver. (The hero name is no longer in this set — it's handled by the intro `.intro-rise` reveal.) Animations play on every load (no sessionStorage gate).
+**Scroll animations** — an inline script in `<head>` adds `first-visit` to `<html>` before CSS loads (prevents FOUC). `.exp-entry` and `.skill-category` start hidden (`opacity: 0; translateY`) and get `is-visible` from an `animObserver` IntersectionObserver. (The hero name is no longer in this set — it's handled by the intro `.intro-rise` reveal.) Animations play on every load (no sessionStorage gate), except under `prefers-reduced-motion: reduce` — a media block forces the reveal elements (`.exp-entry`, `.skill-category`, `.project-card`, `.contact-card`) to their final state with no slide/fade.
 
 **Sections** — six `<section id="...">` inside `<main>`: `home`, `about`, `experience`, `skills`, `projects`, `contact`. Each has class `section`; adjacent sections separated by `border-top`. `#skills`, `#projects`, `#contact`, and `footer` use `content-visibility: auto` (with `contain-intrinsic-size`) so off-screen sections skip layout/paint — this cuts the reflow cost when the experience list expands/collapses on mobile.
 
@@ -52,4 +52,4 @@ The hover-brighten on nav links is written as `html:not(.touch) .nav-link:hover`
 
 **Responsive** — the `@media (max-width: 520px)` rule shows the hamburger and turns `.site-nav` into an animated, blurred dropdown, stacks banners, collapses the experience grid and date, and switches the skills grid and contact card to one column.
 
-**Scrollbar** — a thin (4px) purple scrollbar via `::-webkit-scrollbar` (WebKit) and `scrollbar-color` (Firefox/modern Safari), with a transparent track. **`scrollbar-color` is inherited**, so any nested scroll container picks up the purple. `.site-nav` is `overflow-x: auto`, so it must explicitly reset `scrollbar-color: transparent transparent` (in addition to `scrollbar-width: none` and `::-webkit-scrollbar { display: none }`) — otherwise on iOS WebKit (where the legacy `::-webkit-scrollbar` rule is ignored but the standard `scrollbar-color` is honored) the nav renders a purple horizontal scrollbar that looks like several highlighted tabs at once.
+**Scrollbar** — a thin (4px) purple scrollbar via `::-webkit-scrollbar` (WebKit) and `scrollbar-color` (Firefox), with a transparent track. `.site-nav` hides its own (horizontal) scrollbar with `scrollbar-width: none` + `::-webkit-scrollbar { display: none }`.

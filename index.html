@@ -182,16 +182,9 @@
       flex: 1;
       overflow-x: auto;
       scrollbar-width: none;
-      /* `scrollbar-color` is inherited, so without this the nav's scroll area
-         inherits the purple page scrollbar (var(--accent)) set on <html>. On
-         iOS WebKit the legacy ::-webkit-scrollbar rule below is ignored but
-         this standard property is honored, so the nav would render a purple
-         horizontal scrollbar that looks like several highlighted tabs. Force
-         it transparent so any scrollbar that still appears is invisible. */
-      scrollbar-color: transparent transparent;
     }
 
-    .site-nav::-webkit-scrollbar { display: none; width: 0; height: 0; }
+    .site-nav::-webkit-scrollbar { display: none; }
 
     .nav-link {
       padding: 10px 12px;
@@ -857,6 +850,23 @@
       opacity: 1;
     }
 
+    /* Honor reduced-motion: show the scroll-reveal elements immediately with no
+       slide/fade. !important so it wins over the higher-specificity .is-visible
+       rules above regardless of source order. */
+    @media (prefers-reduced-motion: reduce) {
+      .first-visit .exp-entry,
+      .first-visit .skill-category,
+      .first-visit .project-card,
+      .first-visit .contact-card,
+      .first-visit .project-card.is-visible,
+      .first-visit .contact-card.is-visible {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+
     /* ── Footer ── */
     footer {
       background: var(--banner-bg);
@@ -1407,8 +1417,13 @@
   // to there; a real (manual) scroll — which a programmatic smooth scroll does
   // not produce — clears that intent so manual scrolling resolves normally.
   let navIntentId = null;
-  const atPageBottom = () =>
-    window.innerHeight + Math.ceil(window.scrollY) >= document.documentElement.scrollHeight - 2;
+  const atPageBottom = () => {
+    const docHeight = document.documentElement.scrollHeight;
+    // require an actually-scrollable page, else a viewport taller than the whole
+    // page would always look "at the bottom" and wrongly highlight the last section
+    return docHeight > window.innerHeight &&
+      window.innerHeight + Math.ceil(window.scrollY) >= docHeight - 2;
+  };
 
   let activeTicking = false;
   const updateActiveLink = () => {
