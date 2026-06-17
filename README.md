@@ -12,6 +12,7 @@ A minimal, single-page personal portfolio — no frameworks, no dependencies, no
 - **Interactive skill popovers** — hover or tap a skill to see how it was used
 - **Quick-link banners** — LinkedIn from the home section, with GitHub and CV placeholders
 - **Light / dark mode** — toggle in the header; defaults to dark and persists your choice across reloads
+- **Installable icon** — a custom `</>` favicon, plus an `apple-touch-icon` so iOS "Add to Home Screen" shows a branded tile instead of a generated letter
 - **Purple accent throughout** — unified accent color on nav, toggle, timeline, cards, and scrollbar
 - **Mobile-friendly long text** — About and experience bullets collapse with smooth "Read more" toggles
 - **Fully responsive** — hamburger nav and single-column layouts on small screens
@@ -40,6 +41,7 @@ Then open `index.html` directly:
 | Page title & meta description | `<title>`, `<meta>` tags in `index.html` |
 | Section content | Each `<section id="...">` in `index.html` |
 | Accent color | `--accent` in `:root`, plus the literal `rgba(140, 110, 220, …)` values used for glows and the canvas particles |
+| Favicon & home-screen icon | The inline SVG favicon in `<head>`, and `assets/apple-touch-icon.png` (180×180, opaque) for iOS — regenerate the PNG if you change the glyph or accent |
 | Color palette | CSS custom properties in `:root` and `[data-theme="dark"]` |
 | Skill descriptions | The `skillInfo` object in the `<script>` (keyed by skill name) — fills the hover/tap popovers |
 | Banner links (GitHub / CV) | Both are "Coming soon" placeholders; restore the real `href` and remove `banner--soon` / `tabindex="-1"` / `aria-disabled="true"` to activate |

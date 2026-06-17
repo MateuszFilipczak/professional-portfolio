@@ -14,7 +14,9 @@ No build step. Open `index.html` directly in a browser:
 
 ## Architecture
 
-Everything lives in a single `index.html` — no external dependencies, no framework, no build tool. All CSS is in one `<style>` block in `<head>`; all JS is in one `<script>` block before `</body>`. The PDF resume lives in `assets/`.
+Everything lives in a single `index.html` — no external dependencies, no framework, no build tool. All CSS is in one `<style>` block in `<head>`; all JS is in one `<script>` block before `</body>`. The PDF resume and the `apple-touch-icon.png` live in `assets/`.
+
+**Icons** — the browser-tab favicon is an inline SVG data URI in `<head>` (the purple `</>` code glyph). iOS Safari ignores SVG favicons for "Add to Home Screen" and would otherwise auto-generate an "M on dark" tile, so a separate `<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">` points at a 180×180 **opaque** PNG (no alpha — iOS rounds the corners itself) drawn from the same glyph on the dark `#1e1e1e` background. To regenerate it after changing the glyph or accent, re-run the rasterizer script (`/tmp/mkicon.py` in the original session) or redraw the PNG at 180×180.
 
 **Accent color** — the brand accent is purple `#8c6edc` (RGB `140, 110, 220`), exposed as `--accent`. Many effects (glow shadows, canvas particles, the promo badge) use the raw `rgba(140, 110, 220, …)` triplet inline rather than the variable, so changing the accent means updating both the `--accent` declarations and these literal values.
 
