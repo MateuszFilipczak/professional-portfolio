@@ -1357,17 +1357,27 @@
   });
 
   // Highlight nav link for the section currently in view
+  const setActiveLink = (id) => {
+    navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === `#${id}`));
+  };
+  // The last section (Contact) is too short to reach the observer's detection
+  // band when the page is scrolled all the way down, so treat "at the bottom"
+  // as authoritative and force the last link active there.
+  const atPageBottom = () =>
+    window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+  const lastSectionId = sections.length ? sections[sections.length - 1].id : null;
+
   const observer = new IntersectionObserver((entries) => {
+    if (atPageBottom()) { if (lastSectionId) setActiveLink(lastSectionId); return; }
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        navLinks.forEach(l => l.classList.remove('active'));
-        const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
-        if (active) active.classList.add('active');
-      }
+      if (entry.isIntersecting) setActiveLink(entry.target.id);
     });
   }, { rootMargin: '-20% 0px -70% 0px' });
 
   sections.forEach(s => observer.observe(s));
+  window.addEventListener('scroll', () => {
+    if (atPageBottom() && lastSectionId) setActiveLink(lastSectionId);
+  }, { passive: true });
 
   const animObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
