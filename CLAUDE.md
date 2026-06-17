@@ -50,4 +50,4 @@ Everything lives in a single `index.html` — no external dependencies, no frame
 
 **Responsive** — the `@media (max-width: 520px)` rule shows the hamburger and turns `.site-nav` into an animated, blurred dropdown, stacks banners, collapses the experience grid and date, and switches the skills grid and contact card to one column.
 
-**Scrollbar** — a thin (4px) purple scrollbar via `::-webkit-scrollbar` (WebKit) and `scrollbar-color` (Firefox), with a transparent track.
+**Scrollbar** — a thin (4px) purple scrollbar via `::-webkit-scrollbar` (WebKit) and `scrollbar-color` (Firefox/modern Safari), with a transparent track. **`scrollbar-color` is inherited**, so any nested scroll container picks up the purple. `.site-nav` is `overflow-x: auto`, so it must explicitly reset `scrollbar-color: transparent transparent` (in addition to `scrollbar-width: none` and `::-webkit-scrollbar { display: none }`) — otherwise on iOS WebKit (where the legacy `::-webkit-scrollbar` rule is ignored but the standard `scrollbar-color` is honored) the nav renders a purple horizontal scrollbar that looks like several highlighted tabs at once.
