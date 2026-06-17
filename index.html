@@ -198,7 +198,12 @@
       border-bottom: 2px solid transparent;
     }
 
-    .nav-link:hover { opacity: 0.85; }
+    /* Only on real hovering pointers — touch devices (iPad) keep `:hover`
+       "stuck" on the last-tapped link, which looks like a second highlight
+       alongside the JS-managed .active link. */
+    @media (hover: hover) {
+      .nav-link:hover { opacity: 0.85; }
+    }
 
     .nav-link.active {
       opacity: 1;
