@@ -198,12 +198,12 @@
       border-bottom: 2px solid transparent;
     }
 
-    /* Only on real hovering pointers — touch devices (iPad) keep `:hover`
-       "stuck" on the last-tapped link, which looks like a second highlight
-       alongside the JS-managed .active link. */
-    @media (hover: hover) {
-      .nav-link:hover { opacity: 0.85; }
-    }
+    /* Hover-brighten only with a real pointer. `@media (hover: hover)` is NOT
+       enough — iPadOS Safari matches it (it reports as desktop-class), so a tap
+       leaves `:hover` "stuck" on every tapped tab, which looks like several
+       highlights at once next to the JS-managed .active link. `html.touch` is
+       added by JS on the first touch, which reliably disables hover there. */
+    html:not(.touch) .nav-link:hover { opacity: 0.85; }
 
     .nav-link.active {
       opacity: 1;
@@ -1349,6 +1349,12 @@
     const open = siteNav.classList.toggle('nav-open');
     navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
+
+  // Mark the page as touch-driven on the first touch so hover styles (which
+  // iPadOS leaves "stuck" after a tap) can be disabled via html:not(.touch).
+  window.addEventListener('touchstart', () => {
+    document.documentElement.classList.add('touch');
+  }, { once: true, passive: true });
 
   // Scroll without adding hash to URL
   navLinks.forEach(link => {
