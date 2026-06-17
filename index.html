@@ -1357,25 +1357,41 @@
       siteNav.classList.remove('nav-open');
       navToggle.setAttribute('aria-expanded', 'false');
       const target = document.querySelector(link.getAttribute('href'));
-      if (target) target.scrollIntoView({ behavior: 'smooth' });
+      if (target) {
+        navIntentId = target.id;
+        target.scrollIntoView({ behavior: 'smooth' });
+        requestActiveUpdate();
+      }
     });
   });
 
   // Highlight the nav link for the section currently at the top of the viewport.
   // A scroll-position check (rather than an IntersectionObserver detection band)
   // so a short last section like Contact highlights correctly even though it can
-  // never reach the middle of a tall viewport — and so navigating to a section
-  // near the bottom of the page (Projects) doesn't get overridden by Contact.
+  // never reach the middle of a tall viewport.
   const setActiveLink = (id) => {
     navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === `#${id}`));
   };
-  // Reference line just below the sticky header; the active section is the last
-  // one whose top has scrolled above it (a freshly navigated-to section lands at
-  // scroll-margin-top: 72px, which is above this line).
+  // Reference line just below the sticky header; the active section is normally
+  // the last one whose top has scrolled above it.
   const ACTIVE_OFFSET = 100;
+  const lastSectionId = sections.length ? sections[sections.length - 1].id : null;
+  // When the page is pinned at the bottom, the trailing sections (Projects,
+  // Contact) share the same scroll position and can't reach the reference line,
+  // so geometry alone can't tell them apart. Honor whichever the user navigated
+  // to there; a real (manual) scroll — which a programmatic smooth scroll does
+  // not produce — clears that intent so manual scrolling resolves normally.
+  let navIntentId = null;
+  const atPageBottom = () =>
+    window.innerHeight + Math.ceil(window.scrollY) >= document.documentElement.scrollHeight - 2;
+
   let activeTicking = false;
   const updateActiveLink = () => {
     activeTicking = false;
+    if (atPageBottom()) {
+      setActiveLink(navIntentId || lastSectionId);
+      return;
+    }
     let current = sections.length ? sections[0].id : null;
     sections.forEach(s => {
       if (s.getBoundingClientRect().top <= ACTIVE_OFFSET) current = s.id;
@@ -1389,6 +1405,8 @@
   };
   window.addEventListener('scroll', requestActiveUpdate, { passive: true });
   window.addEventListener('resize', requestActiveUpdate);
+  ['wheel', 'touchmove', 'keydown'].forEach(ev =>
+    window.addEventListener(ev, () => { navIntentId = null; }, { passive: true }));
   updateActiveLink();
 
   const animObserver = new IntersectionObserver((entries) => {
