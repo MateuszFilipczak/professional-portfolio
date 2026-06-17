@@ -8,7 +8,27 @@
   <meta property="og:title" content="Mateusz Filipczak | Cybersecurity, Security Automation & SecDevOps Engineer" />
   <meta property="og:description" content="Cybersecurity Engineer specializing in Cortex XSOAR, API-driven SOC engineering, Security Analytics, Technical Leadership and SecDevOps. 10+ years of experience in cybersecurity." />
   <meta property="og:type" content="website" />
-  <script>document.documentElement.classList.add('first-visit');</script>
+  <script>
+    document.documentElement.classList.add('first-visit');
+    // Always start at the top on reload (don't let the browser restore the
+    // previous scroll position) so the intro/hero reveal begins at the top.
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    // Apply the saved theme BEFORE first paint (default: dark) so the page
+    // never flashes the light background before the script at the end runs.
+    try {
+      if (localStorage.getItem('theme') !== 'light') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    } catch (e) {}
+    // Run the intro reveal once per session, unless the user prefers reduced motion.
+    try {
+      var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reduce && !sessionStorage.getItem('introSeen')) {
+        document.documentElement.classList.add('intro');
+        sessionStorage.setItem('introSeen', '1');
+      }
+    } catch (e) {}
+  </script>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238c6edc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='8,7 3,12 8,17'/><polyline points='16,7 21,12 16,17'/><line x1='14' y1='4.5' x2='10' y2='19.5'/></svg>">
   <style>
     :root {
@@ -40,6 +60,7 @@
 
     html {
       scroll-behavior: smooth;
+      background: var(--bg);
       scrollbar-color: var(--accent) var(--bg);
       scrollbar-width: thin;
     }
@@ -723,6 +744,57 @@
 
     .contact-row a:hover { border-bottom-color: var(--text); }
 
+    /* ── Intro reveal ── */
+    /* Shown while html has .intro (added by the head script, skipped for
+       prefers-reduced-motion and no-JS). The .intro-closing class keeps it
+       displayed after .intro is removed, so it can animate out (converging
+       into the hero canvas) instead of vanishing instantly. */
+    #intro {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--bg);
+      display: none;
+    }
+
+    html.intro #intro,
+    #intro.intro-closing { display: block; }
+
+    .intro-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Choreographed reveal: elements marked .intro-rise stay hidden + lowered
+       while the intro is active (html.intro), then play a staggered rise-in
+       animation once the intro finishes (html.intro-done). Using a keyframe
+       animation (not a transition) keeps each element's own transitions — e.g.
+       the banner hover lift — intact. The overlay covers everything during the
+       intro, so below-fold content needs no special handling.
+       introRise omits its `to` opacity so each element animates up to its own
+       natural value (the CV banner correctly settles at its dimmed 0.45). */
+    @keyframes introRise {
+      from { opacity: 0; transform: translateY(16px); }
+    }
+
+    html.intro .intro-rise {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    html.intro-done .intro-rise {
+      animation: introRise 0.6s ease backwards;
+    }
+
+    html.intro-done header.intro-rise        { animation-delay: 0s; }
+    html.intro-done .home-name.intro-rise    { animation-delay: 0.12s; }
+    html.intro-done .home-tagline.intro-rise { animation-delay: 0.22s; }
+    html.intro-done .banner.intro-rise:nth-child(1) { animation-delay: 0.30s; }
+    html.intro-done .banner.intro-rise:nth-child(2) { animation-delay: 0.38s; }
+    html.intro-done .banner.intro-rise:nth-child(3) { animation-delay: 0.46s; }
+
     /* ── Scroll animations ── */
     .first-visit .exp-entry,
     .first-visit .skill-category {
@@ -790,18 +862,6 @@
     @keyframes cursor-blink {
       0%, 100% { opacity: 1; }
       50%       { opacity: 0; }
-    }
-
-    /* ── Home name entrance ── */
-    .first-visit .home-name {
-      opacity: 0;
-      transform: translateY(16px);
-      transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
-    }
-
-    .first-visit .home-name.is-visible {
-      opacity: 1;
-      transform: none;
     }
 
     /* ── Hamburger ── */
@@ -888,7 +948,11 @@
 </head>
 <body>
 
-<header>
+<div id="intro" aria-hidden="true">
+  <canvas class="intro-canvas"></canvas>
+</div>
+
+<header class="intro-rise">
   <div class="header-inner">
     <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
@@ -920,19 +984,19 @@
   <section id="home" class="section">
     <canvas class="home-canvas" aria-hidden="true"></canvas>
     <div class="home-intro">
-      <div class="home-name">Mateusz Filipczak</div>
-      <p class="home-tagline">Security Automation Engineer & Technical Team Lead · 10+ years in cybersecurity</p>
+      <div class="home-name intro-rise">Mateusz Filipczak</div>
+      <p class="home-tagline intro-rise">Security Automation Engineer & Technical Team Lead · 10+ years in cybersecurity</p>
     </div>
     <div class="banners">
 
-      <a href="https://www.linkedin.com/in/mateusz-f-/" class="banner" id="linkedin-banner">
+      <a href="https://www.linkedin.com/in/mateusz-f-/" class="banner intro-rise" id="linkedin-banner">
         <svg class="banner-icon" viewBox="0 0 24 24" fill="currentColor">
           <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
         </svg>
         <span>LinkedIn</span>
       </a>
 
-      <a href="https://github.com/MateuszFilipczak" class="banner" id="github-banner">
+      <a href="#" class="banner banner--soon intro-rise" id="github-banner" tabindex="-1" aria-disabled="true">
         <svg class="banner-icon" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111
             .793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729
@@ -945,7 +1009,7 @@
         <span>GitHub</span>
       </a>
 
-      <a href="#" class="banner banner--soon" id="resume-banner" tabindex="-1" aria-disabled="true">
+      <a href="#" class="banner banner--soon intro-rise" id="resume-banner" tabindex="-1" aria-disabled="true">
         <svg class="banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -1277,7 +1341,7 @@
       }
     });
   }, { rootMargin: '0px 0px 0px 0px' });
-  document.querySelectorAll('.exp-entry, .skill-category, .home-name').forEach(el => animObserver.observe(el));
+  document.querySelectorAll('.exp-entry, .skill-category').forEach(el => animObserver.observe(el));
 
   // Pulse the dot on whichever exp-entry is currently in view
   const dotObserver = new IntersectionObserver((entries) => {
@@ -1288,21 +1352,22 @@
   document.querySelectorAll('.exp-entry').forEach(el => dotObserver.observe(el));
 
   // ── Canvas particle network ──
-  const canvas = document.querySelector('.home-canvas');
-  if (canvas) {
+  // Reusable field so both the hero canvas and the intro overlay can share it.
+  function createParticleField(canvas, opts) {
+    opts = opts || {};
     const ctx = canvas.getContext('2d');
-    const PARTICLE_COUNT = 48;
-    const MAX_DIST = 140;
+    const COUNT = opts.count || 48;
+    const MAX_DIST = opts.maxDist || 140;
     const particles = [];
 
-    function resizeCanvas() {
+    function resize() {
       canvas.width  = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
     }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    resize();
+    window.addEventListener('resize', resize);
 
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
+    for (let i = 0; i < COUNT; i++) {
       particles.push({
         x:  Math.random() * canvas.width,
         y:  Math.random() * canvas.height,
@@ -1346,18 +1411,76 @@
       }
     }
 
-    // Only run the loop while the hero is on screen — frees the main thread
-    // (and battery) once the user scrolls down to the rest of the page.
-    const heroObserver = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && rafId === null) {
-        frame();
-      } else if (!entry.isIntersecting && rafId !== null) {
-        cancelAnimationFrame(rafId);
-        rafId = null;
-      }
-    });
-    heroObserver.observe(canvas);
+    return {
+      start() { if (rafId === null) frame(); },
+      stop()  { if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; } }
+    };
   }
+
+  const heroCanvas = document.querySelector('.home-canvas');
+  if (heroCanvas) {
+    const heroField = createParticleField(heroCanvas);
+    // Only run while the hero is on screen — frees the main thread and battery.
+    const heroObserver = new IntersectionObserver(([entry]) => {
+      entry.isIntersecting ? heroField.start() : heroField.stop();
+    });
+    heroObserver.observe(heroCanvas);
+  }
+
+  // ── Intro reveal ──
+  // Fullscreen particle animation on load, then the page fades/rises in.
+  // Auto-dismisses after a short delay or on first interaction.
+  (function () {
+    if (!document.documentElement.classList.contains('intro')) return;
+    const intro = document.getElementById('intro');
+    if (!intro) { document.documentElement.classList.remove('intro'); return; }
+
+    const field = createParticleField(intro.querySelector('.intro-canvas'), {
+      count: 70, maxDist: 165
+    });
+    field.start();
+
+    let done = false;
+    function finish() {
+      if (done) return;
+      done = true;
+      // Keep the overlay displayed while .intro is removed, so it can animate
+      // out rather than vanish. Removing .intro triggers the page reveal.
+      intro.classList.add('intro-closing');
+      document.documentElement.classList.remove('intro');
+      document.documentElement.classList.add('intro-done');
+      window.dispatchEvent(new Event('intro:done'));
+
+      // Converge the fullscreen field into the hero canvas's box while fading,
+      // so it gathers into place instead of being replaced by a different field.
+      const target = document.querySelector('.home-canvas');
+      if (target) {
+        const r = target.getBoundingClientRect();
+        intro.style.transformOrigin = '0 0';
+        intro.style.transition =
+          'transform 0.8s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.8s ease';
+        requestAnimationFrame(() => {
+          intro.style.transform =
+            `translate(${r.left}px, ${r.top}px) scale(${r.width / innerWidth}, ${r.height / innerHeight})`;
+          intro.style.opacity = '0';
+        });
+      } else {
+        intro.style.transition = 'opacity 0.6s ease';
+        intro.style.opacity = '0';
+      }
+
+      setTimeout(() => { field.stop(); intro.remove(); }, 850);
+    }
+
+    const timer = setTimeout(finish, 1300);
+    ['click', 'wheel', 'touchstart', 'keydown', 'scroll'].forEach(ev => {
+      window.addEventListener(ev, function once() {
+        clearTimeout(timer);
+        finish();
+        window.removeEventListener(ev, once);
+      }, { passive: true });
+    });
+  })();
 
   // ── Mobile collapse (responsive: applies under 520px, restores above) ──
   (function () {
@@ -1540,6 +1663,8 @@
   })();
 
   // ── Typing animation ──
+  // Waits for the intro to finish so the tagline types out as the page appears
+  // (otherwise it would type while hidden under the overlay).
   const taglineEl = document.querySelector('.home-tagline');
   if (taglineEl) {
     const text = taglineEl.textContent.trim();
@@ -1552,7 +1677,13 @@
         setTimeout(typeChar, 30);
       }
     }
-    setTimeout(typeChar, 700);
+    function startTyping() { setTimeout(typeChar, 400); }
+
+    if (document.documentElement.classList.contains('intro')) {
+      window.addEventListener('intro:done', startTyping, { once: true });
+    } else {
+      startTyping();
+    }
   }
 </script>
 
