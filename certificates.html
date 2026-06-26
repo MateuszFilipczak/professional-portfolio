@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Certificates | Mateusz Filipczak</title>
+  <meta name="description" content="Professional certifications held by Mateusz Filipczak — Cybersecurity, Security Automation & SecDevOps Engineer." />
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#1e1e1e">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="filipczak.dev">
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body class="has-page-bg">
+
+<canvas class="page-bg-canvas" aria-hidden="true"></canvas>
+
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="brand-logo" aria-label="Back to home">
+      <img src="assets/logo.svg" alt="Mateusz Filipczak" />
+    </a>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="#certs-section" class="nav-link">Certifications</a>
+      <a href="#courses-section" class="nav-link" id="courses-nav-link">Courses</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <rect y="3" width="20" height="2" rx="1"/>
+        <rect y="9" width="20" height="2" rx="1"/>
+        <rect y="15" width="20" height="2" rx="1"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="section">
+    <h1 class="cert-page-title">Certificates</h1>
+    <p class="cert-page-sub">Professional certifications &amp; courses.</p>
+
+    <div class="cert-section" id="certs-section">
+      <h2>Certifications</h2>
+      <div class="cert-grid" id="cert-list"></div>
+    </div>
+
+    <div class="cert-section" id="courses-section">
+      <h2>Courses</h2>
+      <div class="cert-grid" id="course-list"></div>
+    </div>
+  </section>
+</main>
+
+<script src="assets/particles.js"></script>
+<script>
+  // ── Certificate list ───────────────────────────────────────────────────
+  // Edit this array. For each entry:
+  //   name    : certificate title
+  //   company : issuing organisation (shown smaller, under the name)
+  //   issued  : issue date, free text e.g. "Jul 2024"  (optional)
+  //   expires : expiry date, free text e.g. "Jul 2028" (optional)
+  //   status  : "active" or "expired"
+  //   url     : credential link (null = not clickable yet)
+  //   logo    : path to a logo image in assets/ (null = placeholder badge icon)
+  const CERTS = [
+    {
+      name: "GIAC Python Coder (GPYC)",
+      company: "GIAC Certifications",
+      issued: "Jul 2024",
+      expires: "Jul 2028",
+      status: "active",
+      url: "https://www.credly.com/badges/00bab041-ad0a-4476-85a9-0925823c7e49",
+      logo: "assets/certificate_logo/giac_logo.jpg"
+    },
+    {
+      name: "Microsoft Certified: Azure Fundamentals",
+      company: "Microsoft",
+      issued: "Jan 2023",
+      expires: null,
+      status: "active",
+      url: "https://www.credly.com/badges/874b1e19-afde-4901-b189-8f0aef3d7d5f",
+      logo: "assets/certificate_logo/microsoft_logo.jpg"
+    },
+    {
+      name: "CompTIA Security+ ce Certification",
+      company: "CompTIA",
+      issued: "Jun 2019",
+      expires: "Jun 2025",
+      status: "expired",
+      url: "https://www.credly.com/badges/36677186-b26d-490e-8453-67add75215e5",
+      logo: "assets/certificate_logo/comptia_logo.jpg"
+    },
+    {
+      name: "Certified SAFe® 5 Practitioner",
+      company: "SAFe by Scaled Agile, Inc.",
+      issued: "Jun 2021",
+      expires: "Jun 2022",
+      status: "expired",
+      url: "https://www.credly.com/badges/5ff2aa64-5e18-477d-9f15-55e90a411ef2",
+      logo: "assets/certificate_logo/scaled_agile_inc__logo.jpg"
+    },
+    // Add more here, e.g.:
+    // { name: "...", company: "...", issued: "Mon Year", expires: "Mon Year",
+    //   status: "active", url: "https://...", logo: "assets/your-logo.png" },
+  ];
+
+  // ── Courses & completions ──────────────────────────────────────────────
+  // Course-completion confirmations (not formal certifications). Fields:
+  //   name      : course title
+  //   company   : provider (shown smaller, under the name)
+  //   completed : completion date, free text e.g. "Mar 2025"
+  //   url       : link to the completion/certificate (null = not clickable)
+  //   logo      : path to a logo image in assets/ (null = placeholder badge icon)
+  // The "Courses & Completions" section stays hidden while this array is empty.
+  const COURSES = [
+    {
+      name: "Claude 101",
+      company: "Anthropic",
+      completed: "Jun 2026",
+      url: "https://verify.skilljar.com/c/7diaoij8buot",
+      logo: "assets/certificate_logo/anthropicresearch_logo.jpg"
+    },
+    {
+      name: "Claude Code 101",
+      company: "Anthropic",
+      completed: "Jun 2026",
+      url: "https://verify.skilljar.com/c/j77hwakk338r",
+      logo: "assets/certificate_logo/anthropicresearch_logo.jpg"
+    },
+    // Add more here, e.g.:
+    // { name: "...", company: "Anthropic", completed: "Mon Year",
+    //   url: "https://...", logo: "assets/certificate_logo/anthropicresearch_logo.jpg" },
+  ];
+
+  // placeholder badge icon (used until a real logo is provided)
+  const BADGE_SVG =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" ' +
+    'stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/>' +
+    '<path d="M8.21 13.89 7 22l5-3 5 3-1.21-8.11"/></svg>';
+
+  const reduce = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Build one card. item: { name, company, dateText, status, url, logo }
+  // status === null → no Active/Expired pill (used for course completions).
+  function buildCard(item, i) {
+    const card = document.createElement(item.url ? 'a' : 'div');
+    card.className = 'cert-card' + (item.url ? '' : ' cert-card--nolink');
+    if (item.url) { card.href = item.url; card.target = '_blank'; card.rel = 'noopener'; }
+    if (!reduce) card.style.animationDelay = (i * 0.07).toFixed(2) + 's';
+
+    const logo = document.createElement(item.logo ? 'img' : 'span');
+    logo.className = 'cert-logo';
+    if (item.logo) { logo.src = item.logo; logo.alt = ''; }
+    else { logo.innerHTML = BADGE_SVG; }
+    card.appendChild(logo);
+
+    const name = document.createElement('div');
+    name.className = 'cert-name';
+    name.textContent = item.name || '';
+    card.appendChild(name);
+
+    if (item.company) {
+      const company = document.createElement('div');
+      company.className = 'cert-company';
+      company.textContent = item.company;
+      card.appendChild(company);
+    }
+
+    if (item.dateText) {
+      const date = document.createElement('div');
+      date.className = 'cert-date';
+      date.textContent = item.dateText;
+      card.appendChild(date);
+    }
+
+    if (item.status) {
+      const active = item.status.toLowerCase() !== 'expired';
+      const status = document.createElement('span');
+      status.className = 'cert-status ' + (active ? 'cert-status--active' : 'cert-status--expired');
+      status.textContent = active ? 'Active' : 'Expired';
+      card.appendChild(status);
+    }
+    return card;
+  }
+
+  // Render a group; hides the whole section when there are no items.
+  function renderGroup(sectionId, listId, items, mapItem) {
+    if (!items.length) { document.getElementById(sectionId).style.display = 'none'; return; }
+    const list = document.getElementById(listId);
+    items.forEach((raw, i) => list.appendChild(buildCard(mapItem(raw), i)));
+  }
+
+  renderGroup('certs-section', 'cert-list', CERTS, c => {
+    const parts = [];
+    if (c.issued) parts.push('Issued ' + c.issued);
+    if (c.expires) parts.push('Expires ' + c.expires);
+    return { name: c.name, company: c.company, dateText: parts.join(' · '),
+             status: c.status || 'active', url: c.url, logo: c.logo };
+  });
+
+  renderGroup('courses-section', 'course-list', COURSES, c => ({
+    name: c.name, company: c.company,
+    dateText: c.completed ? 'Completed ' + c.completed : '',
+    status: null, url: c.url, logo: c.logo
+  }));
+
+  // ── Background particle field (shared with the home page) ──────────────
+  const bgCanvas = document.querySelector('.page-bg-canvas');
+  if (bgCanvas && !reduce && typeof createParticleField === 'function') {
+    createParticleField(bgCanvas, { count: 70, maxDist: 160 }).start();
+  }
+
+  // Disable sticky :hover on touch devices (same as the home page).
+  window.addEventListener('touchstart', () => {
+    document.documentElement.classList.add('touch');
+  }, { once: true, passive: true });
+
+  // ── Nav (same design + behavior as the home page) ──────────────────────
+  const siteNav = document.querySelector('.site-nav');
+  const navToggle = document.querySelector('.nav-toggle');
+  const headerInner = document.querySelector('.header-inner');
+
+  navToggle.addEventListener('click', () => {
+    const open = siteNav.classList.toggle('nav-open');
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  // Hide the Courses link when that section isn't shown (empty COURSES).
+  if (getComputedStyle(document.getElementById('courses-section')).display === 'none') {
+    const cl = document.getElementById('courses-nav-link');
+    if (cl) cl.style.display = 'none';
+  }
+  const sectionLinks = Array.prototype.slice
+    .call(document.querySelectorAll('.site-nav .nav-link'))
+    .filter(l => l.style.display !== 'none');
+
+  // Controlled smooth scroll so the highlight sweeps through sections in turn
+  // (same as the home page). 72px = .cert-section scroll-margin-top.
+  function smoothScrollTo(targetEl) {
+    const startY = window.scrollY;
+    const estTargetY = Math.max(0, startY + targetEl.getBoundingClientRect().top - 72);
+    const duration = Math.min(667, Math.max(300, Math.abs(estTargetY - startY) * 0.30));
+    const ease = t => 1 - Math.pow(1 - t, 3);   // easeOutCubic — fast start, no ramp-up lag
+    const start = performance.now();            // start timing now so the first frame already moves
+    function step(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const targetY = Math.max(0, window.scrollY + targetEl.getBoundingClientRect().top - 72);
+      window.scrollTo(0, startY + (targetY - startY) * ease(t));
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  sectionLinks.forEach(l => l.addEventListener('click', e => {
+    siteNav.classList.remove('nav-open');
+    navToggle.setAttribute('aria-expanded', 'false');
+    const target = document.querySelector(l.getAttribute('href'));
+    if (target) { e.preventDefault(); smoothScrollTo(target); }
+  }));
+
+  // Highlight the section currently at the top of the viewport. Guard + a
+  // one-frame transform nudge on .header-inner clears iOS Safari's
+  // backdrop-filter "ghost underline" repaint bug (same fix as the home page).
+  let activeSectionId = null;
+  function setActiveSection(id) {
+    if (id === activeSectionId) return;
+    activeSectionId = id;
+    sectionLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+    if (headerInner) {
+      headerInner.style.transform = 'translateZ(0)';
+      requestAnimationFrame(() => { headerInner.style.transform = ''; });
+    }
+  }
+  function updateActiveSection() {
+    const secs = Array.prototype.slice.call(document.querySelectorAll('.cert-section'))
+      .filter(s => s.style.display !== 'none');
+    let current = secs.length ? secs[0].id : null;
+    secs.forEach(s => { if (s.getBoundingClientRect().top <= 140) current = s.id; });
+    // A short trailing section (Courses) can't reach the reference line when the
+    // page is scrolled to the bottom — force the last section active there.
+    const atBottom = window.innerHeight + Math.ceil(window.scrollY) >=
+      document.documentElement.scrollHeight - 2;
+    if (atBottom && secs.length) current = secs[secs.length - 1].id;
+    setActiveSection(current);
+  }
+  updateActiveSection();
+  window.addEventListener('scroll', updateActiveSection, { passive: true });
+</script>
+
+</body>
+</html>

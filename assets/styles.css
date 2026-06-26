@@ -1,0 +1,1062 @@
+/* Shared styles for index.html and certificates.html. */
+    :root {
+      --bg: #f5f5f5;
+      --header-bg: rgba(245, 245, 245, 0.75);
+      --text: #1a1a1a;
+      --text-muted: rgba(26, 26, 26, 0.55);
+      --banner-bg: #ffffff;
+      --banner-border: #e0e0e0;
+      --banner-hover-shadow: rgba(0, 0, 0, 0.12);
+      --toggle-track: #c8c8c8;
+      --toggle-thumb: #ffffff;
+      --toggle-track-active: #8c6edc;
+      --accent: #8c6edc;
+    }
+
+    [data-theme="dark"] {
+      --bg: #1e1e1e;
+      --header-bg: rgba(30, 30, 30, 0.75);
+      --text: #e8e8e8;
+      --text-muted: rgba(232, 232, 232, 0.5);
+      --banner-bg: #2a2a2a;
+      --banner-border: #3a3a3a;
+      --banner-hover-shadow: rgba(0, 0, 0, 0.4);
+      --toggle-track: #555;
+      --toggle-thumb: #e8e8e8;
+      --toggle-track-active: #8c6edc;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+      scrollbar-color: var(--accent) var(--bg);
+      scrollbar-width: thin;
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(140, 110, 220, 0.45); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.25s, color 0.25s;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--banner-border);
+      transition: border-color 0.25s;
+    }
+
+    /* Blur lives on a pseudo-element, NOT on <header> itself. If the header
+       carried backdrop-filter it would become a "backdrop root" and the
+       mobile nav dropdown (a descendant) could no longer blur the page
+       behind it. Keeping the filter off <header> lets the dropdown blur work. */
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: var(--header-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition: background 0.25s;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      min-height: 56px;
+      gap: 16px;
+    }
+
+    /* ── Nav ── */
+    /* Logo sits left (`.brand-logo { margin-right: auto }`) and the nav is pushed
+       to the right; the nav is content-width (no flex: 1). */
+    .site-nav {
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .site-nav::-webkit-scrollbar { display: none; }
+
+    .nav-link {
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+      text-decoration: none;
+      opacity: 0.55;
+      transition: opacity 0.15s, color 0.15s;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+    }
+
+    /* Hover-brighten only with a real pointer. `@media (hover: hover)` is NOT
+       enough — iPadOS Safari matches it (it reports as desktop-class), so a tap
+       leaves `:hover` "stuck" on every tapped tab, which looks like several
+       highlights at once next to the JS-managed .active link. `html.touch` is
+       added by JS on the first touch, which reliably disables hover there. */
+    html:not(.touch) .nav-link:hover { opacity: 1; color: var(--accent); }
+
+    .nav-link.active {
+      opacity: 1;
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── Main / sections ── */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .section {
+      padding: 72px 0;
+    }
+
+    .section + .section {
+      border-top: 1px solid var(--banner-border);
+    }
+
+    section[id] {
+      scroll-margin-top: 72px;
+    }
+
+    /* Skip internal layout/paint for sections while they're off-screen.
+       This is the property that actually cuts the reflow cost when the
+       experience list expands/collapses, since everything below it would
+       otherwise be re-laid-out every frame. contain-intrinsic-size reserves
+       a placeholder height so the scrollbar doesn't jump. */
+    #skills, #projects, #contact, footer {
+      content-visibility: auto;
+      contain-intrinsic-size: auto 600px;
+    }
+
+    .section h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+      display: inline-block;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    .section h2::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 32px;
+      height: 2.5px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--accent), #b47aff);
+    }
+
+    /* ── Home intro ── */
+    .home-intro {
+      margin-bottom: 48px;
+    }
+
+    .home-name {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+
+    .home-tagline {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Banners (home) ── */
+    .banners {
+      display: flex;
+      gap: 24px;
+    }
+
+    .banner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 48px 24px;
+      background: var(--banner-bg);
+      border: 1px solid var(--banner-border);
+      border-radius: 16px;
+      text-decoration: none;
+      color: var(--text);
+      transition: transform 0.18s, box-shadow 0.18s, background 0.25s, border-color 0.25s;
+    }
+
+    .banner:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px rgba(140, 110, 220, 0.18);
+      border-color: var(--accent);
+      background: rgba(140, 110, 220, 0.03);
+    }
+
+    .banner:active { transform: translateY(-2px); }
+
+    .banner--soon {
+      opacity: 0.45;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .banner--soon::after {
+      content: "Coming soon";
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: -8px;
+    }
+
+    .banner-icon {
+      width: 56px;
+      height: 56px;
+      opacity: 0.85;
+    }
+
+    .banner span {
+      font-size: 1.3rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    /* ── About ── */
+    .about-text {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--text);
+      opacity: 0.85;
+      max-width: 900px;
+    }
+
+    /* ── Experience ── */
+    .experience-list {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+      position: relative;
+      padding-left: 32px;
+    }
+
+    .experience-list::before {
+      content: '';
+      position: absolute;
+      left: 13px;
+      top: 10px;
+      bottom: 10px;
+      width: 1.5px;
+      background: var(--banner-border);
+      transition: background 0.25s;
+    }
+
+    .exp-entry {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      column-gap: 16px;
+      row-gap: 4px;
+      position: relative;
+    }
+
+    .exp-entry::before {
+      content: '';
+      position: absolute;
+      left: -24px;
+      top: 4px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2.5px solid var(--bg);
+      transition: background 0.25s, border-color 0.25s;
+    }
+
+    .exp-entry.dot-active::before {
+      animation: dot-pulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes dot-pulse {
+      0%, 100% { box-shadow: 0 0 0 3px rgba(140, 110, 220, 0.25); }
+      50%       { box-shadow: 0 0 0 7px rgba(140, 110, 220, 0); }
+    }
+
+    .exp-title {
+      font-size: 1rem;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    /* Highlight the title of the entry whose dot is currently pulsing */
+    .exp-entry.dot-active .exp-title {
+      color: var(--accent);
+    }
+
+    .exp-company {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      grid-column: 1;
+    }
+
+    .exp-date {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: right;
+      white-space: nowrap;
+      grid-row: 1;
+      grid-column: 2;
+      align-self: start;
+    }
+
+    .exp-bullets {
+      grid-column: 1 / -1;
+      margin-top: 10px;
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .exp-bullets li {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text);
+      opacity: 0.8;
+    }
+
+    .exp-projects {
+      grid-column: 1 / -1;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .exp-project-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .exp-projects .exp-bullets {
+      margin-top: 0;
+    }
+
+    .exp-promo {
+      grid-column: 1;
+      margin-top: 5px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .exp-promo::before {
+      content: '↑';
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: rgba(140, 110, 220, 0.15);
+      color: var(--accent);
+      font-size: 0.65rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ── Skills ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .skill-category {
+      background: var(--banner-bg);
+      border: 1px solid var(--banner-border);
+      border-radius: 12px;
+      padding: 20px 22px;
+      transition: background 0.25s, border-color 0.25s;
+    }
+
+    .skill-category h3 {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Unified accent color for all skill categories */
+    .skill-category { --cat-rgb: 140, 110, 220; }
+
+    .skill-level {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: rgb(var(--cat-rgb));
+      text-transform: uppercase;
+    }
+
+    .skill-bar {
+      height: 3px;
+      background: var(--banner-border);
+      border-radius: 2px;
+      margin: 10px 0 14px;
+      overflow: hidden;
+      transition: background 0.25s;
+    }
+
+    .skill-bar-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, rgb(var(--cat-rgb)), rgba(var(--cat-rgb), 0.4));
+      border-radius: 2px;
+      transition: width 1.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.25s;
+    }
+
+    .skill-category.is-visible .skill-bar-fill {
+      width: var(--bar-width, 80%);
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .skill-tag {
+      padding: 5px 12px;
+      background: rgba(var(--cat-rgb), 0.08);
+      border: 1px solid rgba(var(--cat-rgb), 0.22);
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    }
+
+    .skill-tag:hover,
+    .skill-tag:focus-visible {
+      background: rgba(var(--cat-rgb), 0.16);
+      border-color: rgba(var(--cat-rgb), 0.45);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    /* ── Skill info popover ── */
+    .skill-popover {
+      position: absolute;
+      z-index: 200;
+      max-width: 260px;
+      padding: 12px 14px;
+      background: var(--banner-bg);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(140, 110, 220, 0.25);
+      font-size: 0.82rem;
+      line-height: 1.55;
+      color: var(--text);
+      opacity: 0;
+      transform: translateY(6px) scale(0.97);
+      transform-origin: top center;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      pointer-events: none;
+    }
+
+    .skill-popover.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .skill-popover-title {
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+    }
+
+    /* ── Projects ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .project-card {
+      background: var(--banner-bg);
+      border: 1px solid var(--banner-border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.22s, border-color 0.22s, transform 0.22s, box-shadow 0.22s;
+    }
+
+    .project-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px rgba(140, 110, 220, 0.18);
+      background: rgba(140, 110, 220, 0.03);
+    }
+
+    .project-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      transition: color 0.22s;
+    }
+
+    .project-card:hover h3 {
+      color: var(--accent);
+    }
+
+    .project-card p {
+      font-size: 0.875rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .project-link {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--banner-border);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      opacity: 0.45;
+      pointer-events: none;
+      cursor: default;
+      transition: border-color 0.25s;
+    }
+
+    .project-link svg {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+    }
+
+    .project-link-soon {
+      margin-left: auto;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ── Contact ── */
+    .contact-card {
+      background: var(--banner-bg);
+      border: 1px solid var(--banner-border);
+      border-radius: 16px;
+      padding: 36px 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      transition: background 0.25s, border-color 0.25s;
+    }
+
+    .contact-card-heading {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .contact-card-tagline {
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .contact-right {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .contact-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 20px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      align-self: flex-start;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    .contact-btn:hover {
+      opacity: 0.88;
+      transform: translateY(-2px);
+    }
+
+    .contact-btn svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    .contact-secondary {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .contact-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .contact-row svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+
+    .contact-row a {
+      color: var(--text);
+      text-decoration: none;
+      border-bottom: 1px solid var(--banner-border);
+      transition: border-color 0.15s;
+    }
+
+    .contact-row a:hover { border-bottom-color: var(--text); }
+
+    /* ── Intro reveal ── */
+    /* Shown while html has .intro (added by the head script, skipped for
+       prefers-reduced-motion and no-JS). The .intro-closing class keeps it
+       displayed after .intro is removed, so it can animate out (converging
+       into the hero canvas) instead of vanishing instantly. */
+    #intro {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--bg);
+      display: none;
+    }
+
+    html.intro #intro,
+    #intro.intro-closing { display: block; }
+
+    .intro-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Brand mark centered over the particle field. It lives inside #intro, so
+       the convergence/fade in finish() carries it out with the overlay. */
+    .intro-logo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(72vw, 600px);
+      height: auto;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      pointer-events: none;
+      animation: introLogoIn 0.7s ease both;
+    }
+
+    /* `from`-only so it settles at the element's natural (centered, full) state */
+    @keyframes introLogoIn {
+      from { opacity: 0; transform: translate(-50%, -50%) scale(0.92); }
+    }
+
+    /* Choreographed reveal: elements marked .intro-rise stay hidden + lowered
+       while the intro is active (html.intro), then play a staggered rise-in
+       animation once the intro finishes (html.intro-done). Using a keyframe
+       animation (not a transition) keeps each element's own transitions — e.g.
+       the banner hover lift — intact. The overlay covers everything during the
+       intro, so below-fold content needs no special handling.
+       introRise omits its `to` opacity so each element animates up to its own
+       natural value (the CV banner correctly settles at its dimmed 0.45). */
+    @keyframes introRise {
+      from { opacity: 0; transform: translateY(16px); }
+    }
+
+    html.intro .intro-rise {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    html.intro-done .intro-rise {
+      animation: introRise 0.6s ease backwards;
+    }
+
+    html.intro-done header.intro-rise        { animation-delay: 0s; }
+    html.intro-done .home-name.intro-rise    { animation-delay: 0.12s; }
+    html.intro-done .home-tagline.intro-rise { animation-delay: 0.22s; }
+    html.intro-done .banner.intro-rise:nth-child(1) { animation-delay: 0.30s; }
+    html.intro-done .banner.intro-rise:nth-child(2) { animation-delay: 0.38s; }
+    html.intro-done .banner.intro-rise:nth-child(3) { animation-delay: 0.46s; }
+
+    /* ── Scroll animations ── */
+    /* exp-entry / skill-category have no hover transitions, so the simple
+       transition approach is fine. */
+    .first-visit .exp-entry,
+    .first-visit .skill-category {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .first-visit .exp-entry.is-visible,
+    .first-visit .skill-category.is-visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* Cards DO have their own hover transitions (lift/glow), so the entrance
+       uses a keyframe animation instead of a transition — and JS adds
+       .entrance-done on animationend to release it, so hover works afterward. */
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .first-visit .project-card,
+    .first-visit .contact-card {
+      opacity: 0;
+    }
+
+    .first-visit .project-card.is-visible,
+    .first-visit .contact-card.is-visible {
+      animation: riseIn 0.7s ease forwards;
+    }
+
+    .first-visit .project-card.entrance-done,
+    .first-visit .contact-card.entrance-done {
+      animation: none;
+      opacity: 1;
+    }
+
+    /* Honor reduced-motion: show the scroll-reveal elements immediately with no
+       slide/fade. !important so it wins over the higher-specificity .is-visible
+       rules above regardless of source order. */
+    @media (prefers-reduced-motion: reduce) {
+      .first-visit .exp-entry,
+      .first-visit .skill-category,
+      .first-visit .project-card,
+      .first-visit .contact-card,
+      .first-visit .project-card.is-visible,
+      .first-visit .contact-card.is-visible {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--banner-bg);
+      border-top: 1px solid var(--banner-border);
+      transition: background 0.25s, border-color 0.25s;
+    }
+
+    .footer-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 32px;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .footer-inner p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Hero canvas ── */
+    #home {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .home-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .home-intro,
+    .banners {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Typing cursor ── */
+    .typed-cursor {
+      display: inline-block;
+      color: var(--accent);
+      animation: cursor-blink 1s step-end infinite;
+      margin-left: 1px;
+    }
+
+    @keyframes cursor-blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    /* ── Hamburger ── */
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      color: var(--text);
+      flex-shrink: 0;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 520px) {
+      .header-inner { padding: 0 12px; gap: 0; justify-content: space-between; }
+
+      .nav-toggle { display: flex; align-items: center; }
+
+      .site-nav {
+        display: flex;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: var(--header-bg);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-top: 1px solid var(--banner-border);
+        border-bottom: 1px solid var(--banner-border);
+        padding: 8px 0;
+        z-index: 99;
+        /* Closed state — animated, not display:none (so it can transition
+           and so the backdrop blur actually renders) */
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
+      }
+
+      .site-nav.nav-open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+
+      .nav-link {
+        padding: 12px 24px;
+        border-bottom: none;
+        border-left: 2px solid transparent;
+      }
+
+      .nav-link.active {
+        border-left-color: var(--accent);
+        border-bottom-color: transparent;
+      }
+
+      .banners { flex-direction: column; }
+      .exp-entry { grid-template-columns: 1fr; }
+      .exp-date { grid-row: auto; grid-column: auto; text-align: left; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .contact-card { grid-template-columns: 1fr; gap: 24px; }
+
+
+      .read-more-btn {
+        display: inline-flex;
+        align-items: center;
+        background: none;
+        border: none;
+        padding: 6px 0;
+        margin-top: 4px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--accent);
+        cursor: pointer;
+        font-family: inherit;
+      }
+
+      .read-more-btn:hover { opacity: 0.7; }
+    }
+
+    /* ════════════════════════════════════════════════════════════════════
+       Certificates  (home 4th banner + certificates.html page)
+       ════════════════════════════════════════════════════════════════════ */
+
+    /* 4th home banner (Certificates) joins the intro stagger */
+    html.intro-done .banner.intro-rise:nth-child(4) { animation-delay: 0.54s; }
+
+    /* certificates.html header: <mf/> logo left, theme toggle right */
+    .brand-logo { display: flex; align-items: center; margin-right: auto; text-decoration: none; }
+    .brand-logo img { height: 22px; width: auto; display: block; }
+    .brand-logo:hover { opacity: 0.85; }
+
+    .cert-page-title {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .cert-page-sub { color: var(--text-muted); margin-bottom: 36px; }
+
+    /* space between the Certifications and Courses groups */
+    .cert-section + .cert-section { margin-top: 44px; }
+    .cert-section { scroll-margin-top: 72px; }  /* clear the sticky header on nav-jump */
+
+    /* full-page particle background (certificates.html) */
+    .page-bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    /* keep page content above the background canvas (header is sticky/z-index:100) */
+    .has-page-bg main { position: relative; z-index: 1; }
+
+    .cert-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .cert-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 14px;
+      padding: 32px 22px;
+      background: var(--banner-bg);
+      border: 1px solid var(--banner-border);
+      border-radius: 16px;
+      text-decoration: none;
+      color: var(--text);
+      transition: transform 0.18s, box-shadow 0.18s, background 0.25s, border-color 0.25s;
+    }
+
+    a.cert-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px rgba(140, 110, 220, 0.18);
+      border-color: var(--accent);
+      background: rgba(140, 110, 220, 0.03);
+    }
+    a.cert-card:active { transform: translateY(-2px); }
+    .cert-card--nolink { cursor: default; }
+
+    .cert-logo {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+      opacity: 0.9;
+      color: var(--accent);
+    }
+    .cert-logo svg { width: 100%; height: 100%; }
+    /* image logos (usually white-bg brand JPGs) sit on a white rounded chip so
+       they read cleanly on both light and dark cards */
+    img.cert-logo {
+      width: 60px;
+      height: 60px;
+      padding: 8px;
+      background: #fff;
+      border-radius: 12px;
+      opacity: 1;
+    }
+
+    .cert-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+    }
+    .cert-company {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: -10px;       /* sit close under the name (card gap is 14px) */
+    }
+    .cert-date { font-size: 0.85rem; color: var(--text-muted); }
+
+    .cert-status {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+    }
+    .cert-status--active {
+      color: #1f9d57;
+      background: rgba(31, 157, 87, 0.12);
+      border-color: rgba(31, 157, 87, 0.35);
+    }
+    .cert-status--expired {
+      color: #c0453b;
+      background: rgba(210, 84, 74, 0.12);
+      border-color: rgba(210, 84, 74, 0.35);
+    }
+    [data-theme="dark"] .cert-status--active  { color: #4ade80; }
+    [data-theme="dark"] .cert-status--expired { color: #f87171; }
+
+    /* staggered entrance — JS sets per-card animation-delay; reuses @keyframes riseIn */
+    .cert-card {
+      opacity: 0;
+      animation: riseIn 0.6s ease both;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cert-card { opacity: 1 !important; transform: none !important; animation: none !important; }
+    }
+
+    @media (max-width: 520px) {
+      .cert-grid { grid-template-columns: 1fr; }
+    }
