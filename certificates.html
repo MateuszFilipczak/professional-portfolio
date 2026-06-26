@@ -264,20 +264,31 @@
       requestAnimationFrame(() => { headerInner.style.transform = ''; });
     }
   }
+  let activeTicking = false;
   function updateActiveSection() {
+    activeTicking = false;
     const secs = Array.prototype.slice.call(document.querySelectorAll('.cert-section'))
       .filter(s => s.style.display !== 'none');
     let current = secs.length ? secs[0].id : null;
     secs.forEach(s => { if (s.getBoundingClientRect().top <= 140) current = s.id; });
     // A short trailing section (Courses) can't reach the reference line when the
-    // page is scrolled to the bottom — force the last section active there.
-    const atBottom = window.innerHeight + Math.ceil(window.scrollY) >=
-      document.documentElement.scrollHeight - 2;
+    // page is scrolled to the bottom — force the last section active there. Only
+    // when the page actually scrolls, else a short page that fits the viewport
+    // would always pin the last section active.
+    const doc = document.documentElement;
+    const atBottom = doc.scrollHeight > window.innerHeight &&
+      window.innerHeight + Math.ceil(window.scrollY) >= doc.scrollHeight - 2;
     if (atBottom && secs.length) current = secs[secs.length - 1].id;
     setActiveSection(current);
   }
+  function requestActiveUpdate() {
+    if (activeTicking) return;
+    activeTicking = true;
+    requestAnimationFrame(updateActiveSection);
+  }
   updateActiveSection();
-  window.addEventListener('scroll', updateActiveSection, { passive: true });
+  window.addEventListener('scroll', requestActiveUpdate, { passive: true });
+  window.addEventListener('resize', requestActiveUpdate);
 </script>
 
 </body>
