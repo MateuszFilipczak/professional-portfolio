@@ -378,115 +378,7 @@
 
 <script src="assets/particles.js"></script>
 <script>
-  // Logo scrolls back to the top (same target as the Home link).
-  const brandLogo = document.querySelector('.brand-logo');
-  if (brandLogo) {
-    brandLogo.addEventListener('click', e => {
-      e.preventDefault();
-      const home = document.getElementById('home');
-      if (home) smoothScrollTo(home); else window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
-
-  const navLinks = document.querySelectorAll('.nav-link');
-  const sections = document.querySelectorAll('section[id]');
-  const siteNav = document.querySelector('.site-nav');
-  const navToggle = document.querySelector('.nav-toggle');
-  const headerInner = document.querySelector('.header-inner');
-
-  navToggle.addEventListener('click', () => {
-    const open = siteNav.classList.toggle('nav-open');
-    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
-
-  // Mark the page as touch-driven on the first touch so hover styles (which
-  // iPadOS leaves "stuck" after a tap) can be disabled via html:not(.touch).
-  window.addEventListener('touchstart', () => {
-    document.documentElement.classList.add('touch');
-  }, { once: true, passive: true });
-
-  // Native smooth scroll — begins immediately (no JS ramp-up frame, no per-frame
-  // layout reads), and the scrollspy still sweeps the active highlight through
-  // each section as it scrolls. 72px = sections' scroll-margin-top.
-  function smoothScrollTo(targetEl) {
-    const top = Math.max(0, targetEl.getBoundingClientRect().top + window.scrollY - 72);
-    window.scrollTo({ top, behavior: 'smooth' });
-  }
-
-  // Scroll without adding hash to URL
-  navLinks.forEach(link => {
-    link.addEventListener('click', e => {
-      e.preventDefault();
-      siteNav.classList.remove('nav-open');
-      navToggle.setAttribute('aria-expanded', 'false');
-      const target = document.querySelector(link.getAttribute('href'));
-      if (target) {
-        navIntentId = target.id;
-        smoothScrollTo(target);
-        requestActiveUpdate();
-      }
-    });
-  });
-
-  // Highlight the nav link for the section currently at the top of the viewport.
-  // A scroll-position check (rather than an IntersectionObserver detection band)
-  // so a short last section like Contact highlights correctly even though it can
-  // never reach the middle of a tall viewport.
-  let activeLinkId = null;
-  const setActiveLink = (id) => {
-    if (id === activeLinkId) return;            // nothing changed; skip per-frame churn
-    activeLinkId = id;
-    navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === `#${id}`));
-    // iOS Safari sits the header on a backdrop-filter compositing layer and does
-    // NOT repaint it when only a class changes — so each previously-active tab's
-    // underline stays painted ("ghosts"), making several tabs look highlighted.
-    // Nudging a transform on the inner bar forces a recomposite that clears them.
-    if (headerInner) {
-      headerInner.style.transform = 'translateZ(0)';
-      requestAnimationFrame(() => { headerInner.style.transform = ''; });
-    }
-  };
-  // Reference line just below the sticky header; the active section is normally
-  // the last one whose top has scrolled above it.
-  const ACTIVE_OFFSET = 100;
-  const lastSectionId = sections.length ? sections[sections.length - 1].id : null;
-  // When the page is pinned at the bottom, the trailing sections (Projects,
-  // Contact) share the same scroll position and can't reach the reference line,
-  // so geometry alone can't tell them apart. Honor whichever the user navigated
-  // to there; a real (manual) scroll — which a programmatic smooth scroll does
-  // not produce — clears that intent so manual scrolling resolves normally.
-  let navIntentId = null;
-  const atPageBottom = () => {
-    const docHeight = document.documentElement.scrollHeight;
-    // require an actually-scrollable page, else a viewport taller than the whole
-    // page would always look "at the bottom" and wrongly highlight the last section
-    return docHeight > window.innerHeight &&
-      window.innerHeight + Math.ceil(window.scrollY) >= docHeight - 2;
-  };
-
-  let activeTicking = false;
-  const updateActiveLink = () => {
-    activeTicking = false;
-    if (atPageBottom()) {
-      setActiveLink(navIntentId || lastSectionId);
-      return;
-    }
-    let current = sections.length ? sections[0].id : null;
-    sections.forEach(s => {
-      if (s.getBoundingClientRect().top <= ACTIVE_OFFSET) current = s.id;
-    });
-    if (current) setActiveLink(current);
-  };
-  const requestActiveUpdate = () => {
-    if (activeTicking) return;
-    activeTicking = true;
-    requestAnimationFrame(updateActiveLink);
-  };
-  window.addEventListener('scroll', requestActiveUpdate, { passive: true });
-  window.addEventListener('resize', requestActiveUpdate);
-  ['wheel', 'touchmove', 'keydown'].forEach(ev =>
-    window.addEventListener(ev, () => { navIntentId = null; }, { passive: true }));
-  updateActiveLink();
+  // Header nav (logo, hamburger, smooth scroll, scrollspy) lives in assets/nav.js
 
   const animObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -788,6 +680,7 @@
     }
   }
 </script>
+<script src="assets/nav.js"></script>
 
 </body>
 </html>

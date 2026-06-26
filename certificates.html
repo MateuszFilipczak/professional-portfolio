@@ -214,82 +214,9 @@
     createParticleField(bgCanvas, { count: 70, maxDist: 160 }).start();
   }
 
-  // Disable sticky :hover on touch devices (same as the home page).
-  window.addEventListener('touchstart', () => {
-    document.documentElement.classList.add('touch');
-  }, { once: true, passive: true });
-
-  // ── Nav (same design + behavior as the home page) ──────────────────────
-  const siteNav = document.querySelector('.site-nav');
-  const navToggle = document.querySelector('.nav-toggle');
-  const headerInner = document.querySelector('.header-inner');
-
-  navToggle.addEventListener('click', () => {
-    const open = siteNav.classList.toggle('nav-open');
-    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
-
-  // Hide the Courses link when that section isn't shown (empty COURSES).
-  if (getComputedStyle(document.getElementById('courses-section')).display === 'none') {
-    const cl = document.getElementById('courses-nav-link');
-    if (cl) cl.style.display = 'none';
-  }
-  const sectionLinks = Array.prototype.slice
-    .call(document.querySelectorAll('.site-nav .nav-link'))
-    .filter(l => l.style.display !== 'none');
-
-  // Native smooth scroll (same as the home page). 72px = .cert-section scroll-margin-top.
-  function smoothScrollTo(targetEl) {
-    const top = Math.max(0, targetEl.getBoundingClientRect().top + window.scrollY - 72);
-    window.scrollTo({ top, behavior: 'smooth' });
-  }
-
-  sectionLinks.forEach(l => l.addEventListener('click', e => {
-    siteNav.classList.remove('nav-open');
-    navToggle.setAttribute('aria-expanded', 'false');
-    const target = document.querySelector(l.getAttribute('href'));
-    if (target) { e.preventDefault(); smoothScrollTo(target); }
-  }));
-
-  // Highlight the section currently at the top of the viewport. Guard + a
-  // one-frame transform nudge on .header-inner clears iOS Safari's
-  // backdrop-filter "ghost underline" repaint bug (same fix as the home page).
-  let activeSectionId = null;
-  function setActiveSection(id) {
-    if (id === activeSectionId) return;
-    activeSectionId = id;
-    sectionLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
-    if (headerInner) {
-      headerInner.style.transform = 'translateZ(0)';
-      requestAnimationFrame(() => { headerInner.style.transform = ''; });
-    }
-  }
-  let activeTicking = false;
-  function updateActiveSection() {
-    activeTicking = false;
-    const secs = Array.prototype.slice.call(document.querySelectorAll('.cert-section'))
-      .filter(s => s.style.display !== 'none');
-    let current = secs.length ? secs[0].id : null;
-    secs.forEach(s => { if (s.getBoundingClientRect().top <= 140) current = s.id; });
-    // A short trailing section (Courses) can't reach the reference line when the
-    // page is scrolled to the bottom — force the last section active there. Only
-    // when the page actually scrolls, else a short page that fits the viewport
-    // would always pin the last section active.
-    const doc = document.documentElement;
-    const atBottom = doc.scrollHeight > window.innerHeight &&
-      window.innerHeight + Math.ceil(window.scrollY) >= doc.scrollHeight - 2;
-    if (atBottom && secs.length) current = secs[secs.length - 1].id;
-    setActiveSection(current);
-  }
-  function requestActiveUpdate() {
-    if (activeTicking) return;
-    activeTicking = true;
-    requestAnimationFrame(updateActiveSection);
-  }
-  updateActiveSection();
-  window.addEventListener('scroll', requestActiveUpdate, { passive: true });
-  window.addEventListener('resize', requestActiveUpdate);
+  // Header nav (logo, hamburger, smooth scroll, scrollspy) lives in assets/nav.js
 </script>
+<script src="assets/nav.js"></script>
 
 </body>
 </html>
