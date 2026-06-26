@@ -238,21 +238,10 @@
     .call(document.querySelectorAll('.site-nav .nav-link'))
     .filter(l => l.style.display !== 'none');
 
-  // Controlled smooth scroll so the highlight sweeps through sections in turn
-  // (same as the home page). 72px = .cert-section scroll-margin-top.
+  // Native smooth scroll (same as the home page). 72px = .cert-section scroll-margin-top.
   function smoothScrollTo(targetEl) {
-    const startY = window.scrollY;
-    const estTargetY = Math.max(0, startY + targetEl.getBoundingClientRect().top - 72);
-    const duration = Math.min(667, Math.max(300, Math.abs(estTargetY - startY) * 0.30));
-    const ease = t => 1 - Math.pow(1 - t, 3);   // easeOutCubic — fast start, no ramp-up lag
-    const start = performance.now();            // start timing now so the first frame already moves
-    function step(now) {
-      const t = Math.min(1, (now - start) / duration);
-      const targetY = Math.max(0, window.scrollY + targetEl.getBoundingClientRect().top - 72);
-      window.scrollTo(0, startY + (targetY - startY) * ease(t));
-      if (t < 1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
+    const top = Math.max(0, targetEl.getBoundingClientRect().top + window.scrollY - 72);
+    window.scrollTo({ top, behavior: 'smooth' });
   }
 
   sectionLinks.forEach(l => l.addEventListener('click', e => {
